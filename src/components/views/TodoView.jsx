@@ -9,10 +9,14 @@ export default function TodoView({ store }) {
         <div key={t.id} className="flex items-center gap-4 px-6 py-4 border-b border-[var(--line)]">
           <div
             onClick={() => toggleTodo(t.id)}
-            className="w-[22px] h-[22px] rounded-[7px] shrink-0 cursor-pointer border-2 border-primary bg-[var(--input-bg)]"
+            className={`w-[22px] h-[22px] rounded-[7px] shrink-0 cursor-pointer border-2 border-primary ${
+              t.done ? 'bg-primary' : 'bg-[var(--input-bg)]'
+            }`}
           />
           <div className="flex-1 min-w-0">
-            <div className="text-[14.5px] font-bold text-[var(--text)]">
+            <div
+              className={`text-[14.5px] font-bold ${t.done ? 'line-through text-[var(--muted)]' : 'text-[var(--text)]'}`}
+            >
               {t.drug} · {t.qty}
             </div>
             <div className="text-[12.5px] text-[var(--muted)]">{t.patient}</div>

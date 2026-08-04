@@ -243,16 +243,20 @@ export function usePharmacyStore() {
   const addTask = () => {
     const text = newTaskText.trim();
     if (!text) return;
-    setTasks((prev) => [...prev, { id: Date.now(), dateISO: selectedDate, text }]);
+    setTasks((prev) => [...prev, { id: Date.now(), dateISO: selectedDate, text, done: false }]);
     setNewTaskText('');
   };
 
-  const pendingTodos = todos.filter((t) => t.status === 'pending');
-  const overdueTodos = pendingTodos
+  const toggleTask = (id) =>
+    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
+
+  const deleteTask = (id) => setTasks((prev) => prev.filter((t) => t.id !== id));
+
+  const overdueTodos = todos
     .filter((t) => t.dateISO < TODAY)
     .sort((a, b) => a.dateISO.localeCompare(b.dateISO))
-    .map((t) => ({ ...t, date: fmtDate(t.dateISO) }));
-  const todoPreview = pendingTodos.map((t) => ({ ...t, date: fmtDate(t.dateISO) }));
+    .map((t) => ({ ...t, date: fmtDate(t.dateISO), done: t.status === 'done' }));
+  const todoPreview = todos.map((t) => ({ ...t, date: fmtDate(t.dateISO), done: t.status === 'done' }));
 
   const toggleTodo = (id) =>
     setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, status: 'done' } : t)));
@@ -268,8 +272,6 @@ export function usePharmacyStore() {
     ]);
     setNewTodoText('');
   };
-
-  const visibleNotes = quickNotes.filter((n) => !n.done);
 
   const addQuickNote = () => {
     const text = newNoteText.trim();
@@ -335,6 +337,8 @@ export function usePharmacyStore() {
     newTaskText,
     setNewTaskText,
     addTask,
+    toggleTask,
+    deleteTask,
 
     customerPreview,
     todoPreview,
@@ -343,7 +347,6 @@ export function usePharmacyStore() {
     addTodoQuick,
 
     quickNotes,
-    visibleNotes,
     newNoteText,
     setNewNoteText,
     addQuickNote,
