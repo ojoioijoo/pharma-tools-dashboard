@@ -1,6 +1,7 @@
 import MiniCalendar from '../MiniCalendar.jsx';
 import OverviewCard from '../OverviewCard.jsx';
 import CustomNoteCard from '../CustomNoteCard.jsx';
+import { TrashIcon } from '../icons.jsx';
 
 export default function OverviewView({ store, goTo }) {
   const {
@@ -87,13 +88,20 @@ export default function OverviewView({ store, goTo }) {
             </a>
           </div>
           <div className="mb-3">
-            {store.quickNotes.map((n) => (
-              <div key={n.id} className="flex gap-2.5 py-2.5 border-t border-[var(--line)]">
-                <div className="w-[30px] h-[30px] rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 bg-primary text-white">
-                  ✎
-                </div>
+            {store.visibleNotes.map((n) => (
+              <div key={n.id} className="flex items-start gap-2.5 py-2.5 border-t border-[var(--line)]">
+                <div
+                  onClick={() => store.toggleQuickNote(n.id)}
+                  className="w-[18px] h-[18px] rounded-md border-2 border-primary shrink-0 bg-[var(--input-bg)] cursor-pointer mt-0.5"
+                />
                 <div className="min-w-0 flex-1">
                   <div className="text-[11.5px] text-[var(--text)] break-words whitespace-pre-wrap">{n.text}</div>
+                </div>
+                <div
+                  onClick={() => store.deleteQuickNote(n.id)}
+                  className="text-[var(--muted)] hover:text-danger cursor-pointer shrink-0 mt-0.5"
+                >
+                  <TrashIcon />
                 </div>
               </div>
             ))}
@@ -146,13 +154,22 @@ export default function OverviewView({ store, goTo }) {
           <div className="mb-3">
             {store.todoPreview.map((t) => (
               <div key={t.id} className="flex items-center gap-2.5 py-[9px] border-t border-[var(--line)]">
-                <div className="w-[18px] h-[18px] rounded-md border-2 border-primary shrink-0 bg-[var(--input-bg)]" />
+                <div
+                  onClick={() => store.toggleTodo(t.id)}
+                  className="w-[18px] h-[18px] rounded-md border-2 border-primary shrink-0 bg-[var(--input-bg)] cursor-pointer"
+                />
                 <div className="flex-1 min-w-0">
                   <div className="text-[13px] font-semibold text-[var(--text)] break-words">{t.drug}</div>
                   <div className="text-[11px] text-[var(--muted)]">
                     {t.patient ? `${t.patient} · ` : ''}
                     {t.date}
                   </div>
+                </div>
+                <div
+                  onClick={() => store.deleteTodo(t.id)}
+                  className="text-[var(--muted)] hover:text-danger cursor-pointer shrink-0"
+                >
+                  <TrashIcon />
                 </div>
               </div>
             ))}

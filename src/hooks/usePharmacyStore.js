@@ -257,6 +257,8 @@ export function usePharmacyStore() {
   const toggleTodo = (id) =>
     setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, status: 'done' } : t)));
 
+  const deleteTodo = (id) => setTodos((prev) => prev.filter((t) => t.id !== id));
+
   const addTodoQuick = () => {
     const text = newTodoText.trim();
     if (!text) return;
@@ -267,12 +269,19 @@ export function usePharmacyStore() {
     setNewTodoText('');
   };
 
+  const visibleNotes = quickNotes.filter((n) => !n.done);
+
   const addQuickNote = () => {
     const text = newNoteText.trim();
     if (!text) return;
-    setQuickNotes((prev) => [{ id: Date.now(), text }, ...prev]);
+    setQuickNotes((prev) => [{ id: Date.now(), text, done: false }, ...prev]);
     setNewNoteText('');
   };
+
+  const toggleQuickNote = (id) =>
+    setQuickNotes((prev) => prev.map((n) => (n.id === id ? { ...n, done: !n.done } : n)));
+
+  const deleteQuickNote = (id) => setQuickNotes((prev) => prev.filter((n) => n.id !== id));
 
   const tefteriEntries = useMemo(
     () =>
@@ -334,9 +343,12 @@ export function usePharmacyStore() {
     addTodoQuick,
 
     quickNotes,
+    visibleNotes,
     newNoteText,
     setNewNoteText,
     addQuickNote,
+    toggleQuickNote,
+    deleteQuickNote,
 
     overviewOrder,
     overviewDragKey,
@@ -354,6 +366,7 @@ export function usePharmacyStore() {
 
     overdueTodos,
     toggleTodo,
+    deleteTodo,
 
     tefteriEntries,
     tefteriTotal,

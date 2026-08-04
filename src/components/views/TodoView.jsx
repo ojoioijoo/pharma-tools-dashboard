@@ -1,5 +1,7 @@
+import { TrashIcon } from '../icons.jsx';
+
 export default function TodoView({ store }) {
-  const { overdueTodos, toggleTodo } = store;
+  const { overdueTodos, toggleTodo, deleteTodo } = store;
 
   return (
     <div className="bg-[var(--card-bg)] rounded-[20px] shadow-card overflow-hidden">
@@ -17,6 +19,12 @@ export default function TodoView({ store }) {
           </div>
           <div className="text-xs font-bold px-[13px] py-1.5 rounded-full bg-[var(--input-bg)] text-[var(--text)]">
             {t.date}
+          </div>
+          <div
+            onClick={() => deleteTodo(t.id)}
+            className="text-[var(--muted)] hover:text-danger cursor-pointer shrink-0"
+          >
+            <TrashIcon />
           </div>
         </div>
       ))}
