@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --page-bg: #f5f6fb;
+  --sidebar-bg: #ffffff;
+  --card-bg: #ffffff;
+  --line: #e7e9f5;
+  --text: #1d2144;
+  --muted: #8a8fa3;
+  --input-bg: #ffffff;
+  --active-nav: #edeffc;
+}
+
+.dark {
+  --page-bg: #1a1b2e;
+  --sidebar-bg: #20213a;
+  --card-bg: #242640;
+  --line: #33355a;
+  --text: #e8e9f5;
+  --muted: #9497be;
+  --input-bg: #2a2c48;
+  --active-nav: rgba(91, 110, 245, 0.25);
+}
+
+body {
+  margin: 0;
+}
+
+a {
+  color: #5b6ef5;
+  text-decoration: none;
+}
+
+a:hover {
+  color: #4453d8;
+}

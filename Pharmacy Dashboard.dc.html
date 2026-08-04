@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <template id="__bundler_thumbnail" data-bg-color="#F5F6FB">
+    <svg viewBox="0 0 120 80" xmlns="http://www.w3.org/2000/svg">
+      <rect width="120" height="80" fill="#F5F6FB"/>
+      <rect x="8" y="8" width="26" height="64" rx="6" fill="#FFFFFF"/>
+      <circle cx="21" cy="24" r="6" fill="#5B6EF5"/>
+      <rect x="44" y="8" width="68" height="30" rx="6" fill="#5B6EF5"/>
+      <rect x="44" y="42" width="32" height="30" rx="6" fill="#FFFFFF"/>
+      <rect x="80" y="42" width="32" height="30" rx="6" fill="#FFFFFF"/>
+    </svg>
+  </template>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body { margin: 0; }
+    a { color: #5B6EF5; text-decoration: none; }
+    a:hover { color: #4453D8; }
+  </style>
+</helmet>
+<div style="display:flex; min-height:100vh; font-family:'Inter',sans-serif; background:{{ theme.pageBg }}; color:{{ theme.text }}">
+
+  <aside style="width:236px; flex-shrink:0; background:{{ theme.sidebarBg }}; padding:28px 18px; display:flex; flex-direction:column; gap:6px; border-right:1px solid {{ theme.border }}">
+    <div style="display:flex; align-items:center; gap:10px; padding:6px 8px 26px 8px">
+      <div style="width:38px; height:38px; border-radius:12px; background:#5B6EF5; display:flex; align-items:center; justify-content:center; flex-shrink:0">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"><path d="M12 3v18M3 12h18"/></svg>
+      </div>
+      <div style="font-family:'Poppins',sans-serif; font-weight:700; font-size:16.5px; line-height:1.1">Φαρμακείο<br/>Ευζωία</div>
+    </div>
+
+    <sc-for list="{{ navItems }}" as="nav" hint-placeholder-count="5">
+      <div draggable="true" onDragStart="{{ nav.onDragStart }}" onDragOver="{{ nav.onDragOver }}" onDrop="{{ nav.onDrop }}" onDragEnd="{{ nav.onDragEnd }}" onClick="{{ nav.onClick }}" style="display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:14px; cursor:grab; font-size:14.5px; font-weight:600; background:{{ nav.bg }}; color:{{ nav.color }}; opacity:{{ nav.opacity }}">
+        {{ nav.icon }}
+        {{ nav.label }}
+      </div>
+    </sc-for>
+
+    <div style="flex:1"></div>
+
+    <div style="display:flex; align-items:center; gap:12px; padding:11px 14px; border-radius:14px; color:{{ theme.muted }}; font-size:14.5px; font-weight:600; cursor:pointer">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{ theme.muted }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 13a7.6 7.6 0 0 0 0-2l2-1.5-2-3.4-2.4 1a7.7 7.7 0 0 0-1.7-1L15 3h-4l-.3 2.6a7.7 7.7 0 0 0-1.7 1l-2.4-1-2 3.4L6.6 11a7.6 7.6 0 0 0 0 2l-2 1.5 2 3.4 2.4-1a7.7 7.7 0 0 0 1.7 1L11 21h4l.3-2.6a7.7 7.7 0 0 0 1.7-1l2.4 1 2-3.4-2-1.5Z"/></svg>
+      Ρυθμίσεις
+    </div>
+    <div style="display:flex; align-items:center; gap:12px; padding:11px 14px 4px 14px; color:{{ theme.muted }}; font-size:14.5px; font-weight:600; cursor:pointer">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="{{ theme.muted }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="M16 17l5-5-5-5"/><path d="M21 12H9"/></svg>
+      Αποσύνδεση
+    </div>
+  </aside>
+
+  <main style="flex:1; padding:34px 44px 50px 44px; overflow-y:auto">
+
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:30px">
+      <div>
+        <div style="font-size:13.5px; color:{{ theme.muted }}; margin-bottom:4px">Καλημέρα, Δρ. Παπαδοπούλου</div>
+        <div style="font-family:'Poppins',sans-serif; font-weight:700; font-size:27px">{{ pageTitle }}</div>
+      </div>
+      <div style="display:flex; align-items:center; gap:14px">
+        <div style="background:{{ theme.cardBg }}; border:1px solid {{ theme.border }}; padding:9px 16px; border-radius:12px; font-size:13.5px; font-weight:600; color:{{ theme.text }}">Τρίτη, 31 Ιουλίου 2026</div>
+        <div onClick="{{ toggleDarkMode }}" style="width:38px; height:38px; border-radius:12px; background:{{ theme.cardBg }}; border:1px solid {{ theme.border }}; display:flex; align-items:center; justify-content:center; cursor:pointer">{{ themeIcon }}</div>
+        <div style="width:38px; height:38px; border-radius:50%; background:#5B6EF5; display:flex; align-items:center; justify-content:center; font-family:'Poppins',sans-serif; font-weight:700; font-size:14px; color:#1D2144">ΕΠ</div>
+      </div>
+    </div>
+
+    <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ true }}">
+      <div style="display:grid; grid-template-columns:1.5fr 1fr 1fr 1fr; gap:20px">
+        <div style="min-width:0; background:{{ theme.cardBg }}; border-radius:20px; padding:20px 22px; box-shadow:0 10px 26px -16px rgba(28,29,33,0.12); display:flex; flex-direction:column">
+          <div style="font-family:'Poppins',sans-serif; font-weight:700; font-size:15px; margin-bottom:12px">Σήμερα · {{ selectedLabel }}</div>
+          <div style="margin-bottom:12px; min-height:40px">
+            <sc-for list="{{ tasksForSelected }}" as="tk" hint-placeholder-count="2">
+              <div style="display:flex; align-items:center; gap:10px; padding:8px 0; border-top:1px solid {{ theme.border }}">
+                <div style="width:6px; height:6px; border-radius:50%; background:#5B6EF5; flex-shrink:0"></div>
+                <div style="font-size:13px">{{ tk.text }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex; flex-direction:column; gap:6px">
+            <input type="text" placeholder="Νέα δουλειά..." value="{{ newTaskText }}" onChange="{{ onTaskInput }}" style="width:100%; box-sizing:border-box; border:1px solid {{ theme.border }}; background:{{ theme.inputBg }}; color:{{ theme.text }}; border-radius:10px; padding:8px 10px; font-size:12.5px; font-family:'Inter',sans-serif; outline:none; white-space:nowrap; text-overflow:ellipsis"/>
+            <div onClick="{{ addTask }}" style="background:#5B6EF5; color:#FFFFFF; font-weight:700; font-size:12px; padding:7px 12px; border-radius:10px; cursor:pointer; text-align:center">Προσθήκη</div>
+          </div>
+        </div>
+        <div style="min-width:0; background:{{ theme.cardBg }}; border-radius:20px; padding:16px 18px; box-shadow:0 10px 26px -16px rgba(28,29,33,0.12)">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px">
+            <div onClick="{{ prevMonth }}" style="cursor:pointer; width:20px; height:20px; border-radius:6px; display:flex; align-items:center; justify-content:center; background:{{ theme.inputBg }}; font-size:11px; font-weight:700">‹</div>
+            <div style="font-family:'Poppins',sans-serif; font-weight:700; font-size:12px">{{ calLabel }}</div>
+            <div onClick="{{ nextMonth }}" style="cursor:pointer; width:20px; height:20px; border-radius:6px; display:flex; align-items:center; justify-content:center; background:{{ theme.inputBg }}; font-size:11px; font-weight:700">›</div>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:3px; margin-bottom:3px">
+            <sc-for list="{{ dayLabels }}" as="dl" hint-placeholder-count="7">
+              <div style="text-align:center; font-size:9px; font-weight:600; color:{{ theme.muted }}">{{ dl }}</div>
+            </sc-for>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(7,1fr); gap:3px">
+            <sc-for list="{{ calCells }}" as="cell" hint-placeholder-count="35">
+              <div onClick="{{ cell.select }}" style="aspect-ratio:1; border-radius:5px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:{{ cell.cursor }}; background:{{ cell.bg }}; color:{{ cell.color }}; font-size:9.5px; font-weight:600; position:relative">
+                {{ cell.day }}
+                <sc-if value="{{ cell.hasTasks }}" hint-placeholder-val="{{ false }}">
+                  <div style="width:3px; height:3px; border-radius:50%; background:#5B6EF5; position:absolute; bottom:2px"></div>
+                </sc-if>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="min-width:0; background:{{ theme.cardBg }}; border-radius:20px; padding:20px 22px; box-shadow:0 10px 26px -16px rgba(28,29,33,0.12)">
+          <div style="margin-bottom:14px">
+            <div style="font-family:'Poppins',sans-serif; font-weight:700; font-size:14px; margin-bottom:3px">Πρόσφατες σημειώσεις</div>
+            <a href="#" onClick="{{ goCrm }}" style="font-size:11.5px; font-weight:600">Όλες →</a>
+          </div>
+          <sc-for list="{{ customerPreview }}" as="c" hint-placeholder-count="3">
+            <div style="display:flex; gap:10px; padding:10px 0; border-top:1px solid {{ theme.border }}">
+              <div style="width:30px; height:30px; border-radius:50%; background:{{ c.color }}; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:700; color:{{ theme.text }}; flex-shrink:0">{{ c.initials }}</div>
+              <div style="min-width:0">
+                <div style="font-size:13px; font-weight:600">{{ c.name }}</div>
+                <div style="font-size:11.5px; color:{{ theme.muted }}; overflow:hidden; text-overflow:ellipsis; white-space:nowrap">{{ c.note }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="min-width:0; background:{{ theme.cardBg }}; border-radius:20px; padding:20px 22px; box-shadow:0 10px 26px -16px rgba(28,29,33,0.12)">
+          <div style="margin-bottom:14px">
+            <div style="font-family:'Poppins',sans-serif; font-weight:700; font-size:14px; margin-bottom:3px">Εκκρεμότητες</div>
+            <a href="#" onClick="{{ goTodo }}" style="font-size:11.5px; font-weight:600">Όλες →</a>
+          </div>
+          <sc-for list="{{ todoPreview }}" as="t" hint-placeholder-count="3">
+            <div style="display:flex; align-items:center; gap:10px; padding:9px 0; border-top:1px solid {{ theme.border }}">
+              <div style="width:18px; height:18px; border-radius:6px; border:2px solid #5B6EF5; flex-shrink:0; background:{{ theme.inputBg }}"></div>
+              <div style="flex:1; min-width:0">
+                <div style="font-size:13px; font-weight:600">{{ t.drug }}</div>
+                <div style="font-size:11px; color:{{ theme.muted }}">{{ t.patient }} · {{ t.date }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isCrm }}" hint-placeholder-val="{{ false }}">
+      <div style="background:{{ theme.cardBg }}; border-radius:20px; box-shadow:0 10px 26px -16px rgba(28,29,33,0.12); overflow:hidden">
+        <div style="padding:18px 24px; border-bottom:1px solid {{ theme.border }}">
+          <input type="text" placeholder="Αναζήτηση πελάτη..." value="{{ crmQuery }}" onChange="{{ onCrmSearch }}" style="width:100%; box-sizing:border-box; border:1px solid {{ theme.border }}; background:{{ theme.inputBg }}; color:{{ theme.text }}; border-radius:12px; padding:11px 16px; font-size:14px; font-family:'Inter',sans-serif; outline:none"/>
+        </div>
+        <sc-for list="{{ filteredCustomers }}" as="c" hint-placeholder-count="5">
+          <div style="display:flex; gap:16px; padding:18px 24px; border-bottom:1px solid {{ theme.border }}; align-items:flex-start">
+            <div style="width:44px; height:44px; border-radius:50%; background:{{ c.color }}; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:{{ theme.text }}; flex-shrink:0">{{ c.initials }}</div>
+            <div style="flex:1; min-width:0">
+              <div style="display:flex; align-items:center; gap:10px; margin-bottom:4px">
+                <div style="font-size:15px; font-weight:700">{{ c.name }}</div>
+                <div style="font-size:12px; color:{{ theme.muted }}">Τελ. επίσκεψη: {{ c.lastVisit }}</div>
+              </div>
+              <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px">
+                <sc-for list="{{ c.tags }}" as="tag" hint-placeholder-count="2">
+                  <span style="font-size:11.5px; font-weight:600; padding:4px 11px; border-radius:20px; background:{{ theme.inputBg }}; color:{{ theme.text }}">{{ tag }}</span>
+                </sc-for>
+              </div>
+              <div style="font-size:13.5px; color:{{ theme.text }}; line-height:1.5">{{ c.note }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isTodo }}" hint-placeholder-val="{{ false }}">
+      <div style="background:{{ theme.cardBg }}; border-radius:20px; box-shadow:0 10px 26px -16px rgba(28,29,33,0.12); overflow:hidden">
+        <sc-for list="{{ overdueTodos }}" as="t" hint-placeholder-count="6">
+          <div style="display:flex; align-items:center; gap:16px; padding:16px 24px; border-bottom:1px solid {{ theme.border }}">
+            <div onClick="{{ t.toggle }}" style="width:22px; height:22px; border-radius:7px; flex-shrink:0; cursor:pointer; border:2px solid #5B6EF5; background:{{ theme.inputBg }}"></div>
+            <div style="flex:1; min-width:0">
+              <div style="font-size:14.5px; font-weight:700">{{ t.drug }} · {{ t.qty }}</div>
+              <div style="font-size:12.5px; color:{{ theme.muted }}">{{ t.patient }}</div>
+            </div>
+            <div style="font-size:12px; font-weight:700; padding:6px 13px; border-radius:20px; background:{{ theme.inputBg }}; color:{{ theme.text }}">{{ t.date }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isTefteri }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
+        <div style="font-size:14px; color:{{ theme.muted }}">Σύνολο χρωστούμενων</div>
+        <div style="font-family:'Poppins',sans-serif; font-weight:700; font-size:24px">{{ tefteriTotal }}</div>
+      </div>
+      <div style="background:{{ theme.cardBg }}; border-radius:20px; box-shadow:0 10px 26px -16px rgba(28,29,33,0.12); overflow:hidden">
+        <sc-for list="{{ tefteriEntries }}" as="e" hint-placeholder-count="4">
+          <div style="display:flex; align-items:center; gap:16px; padding:16px 24px; border-bottom:1px solid {{ theme.border }}">
+            <div onClick="{{ e.toggle }}" style="width:22px; height:22px; border-radius:7px; flex-shrink:0; cursor:pointer; border:2px solid #5B6EF5; background:{{ e.boxBg }}"></div>
+            <div style="flex:1; min-width:0; text-decoration:{{ e.strike }}">
+              <div style="font-size:14.5px; font-weight:700">{{ e.customer }}</div>
+              <div style="font-size:12.5px; color:{{ theme.muted }}">{{ e.note }}</div>
+            </div>
+            <div style="font-size:12px; color:{{ theme.muted }}; width:60px; text-align:right">{{ e.date }}</div>
+            <div style="font-size:15px; font-weight:700; width:80px; text-align:right">{{ e.amountLabel }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+    <sc-if value="{{ isFinance }}" hint-placeholder-val="{{ false }}">
+      <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:20px; margin-bottom:22px">
+        <div style="background:{{ theme.cardBg }}; border-radius:20px; padding:20px 22px; box-shadow:0 10px 26px -16px rgba(28,29,33,0.12)">
+          <div style="font-size:13px; color:{{ theme.muted }}; margin-bottom:8px">Ταμείο τώρα</div>
+          <div style="font-family:'Poppins',sans-serif; font-size:22px; font-weight:700">€1.284,50</div>
+        </div>
+        <div style="background:{{ theme.cardBg }}; border-radius:20px; padding:20px 22px; box-shadow:0 10px 26px -16px rgba(28,29,33,0.12)">
+          <div style="font-size:13px; color:{{ theme.muted }}; margin-bottom:8px">Έσοδα μήνα</div>
+          <div style="font-family:'Poppins',sans-serif; font-size:22px; font-weight:700; color:#4453D8">€18.420</div>
+        </div>
+        <div style="background:{{ theme.cardBg }}; border-radius:20px; padding:20px 22px; box-shadow:0 10px 26px -16px rgba(28,29,33,0.12)">
+          <div style="font-size:13px; color:{{ theme.muted }}; margin-bottom:8px">Έξοδα μήνα</div>
+          <div style="font-family:'Poppins',sans-serif; font-size:22px; font-weight:700; color:#EF5C6E">€5.310</div>
+        </div>
+        <div style="background:{{ theme.cardBg }}; border-radius:20px; padding:20px 22px; box-shadow:0 10px 26px -16px rgba(28,29,33,0.12)">
+          <div style="font-size:13px; color:{{ theme.muted }}; margin-bottom:8px">Καθαρό κέρδος</div>
+          <div style="font-family:'Poppins',sans-serif; font-size:22px; font-weight:700">€13.110</div>
+        </div>
+      </div>
+
+      <div style="background:{{ theme.cardBg }}; border-radius:20px; padding:24px; box-shadow:0 10px 26px -16px rgba(28,29,33,0.12); margin-bottom:20px">
+        <div style="font-family:'Poppins',sans-serif; font-weight:700; font-size:16px; margin-bottom:6px">Ημερήσιες πωλήσεις (εβδομάδα)</div>
+        <div style="display:flex; gap:16px; font-size:12.5px; color:{{ theme.muted }}; margin-bottom:16px">
+          <span>● Πωλήσεις</span>
+        </div>
+        <div style="display:flex; gap:16px; height:150px">
+          <sc-for list="{{ salesWeek }}" as="d" hint-placeholder-count="7">
+            <div style="display:flex; flex-direction:column; justify-content:flex-end; align-items:center; gap:8px; flex:1; min-width:0">
+              <div style="width:100%; max-width:38px; border-radius:9px 9px 4px 4px; background:#5B6EF5; height:{{ d.pct }}%"></div>
+              <div style="font-size:12px; color:{{ theme.muted }}">{{ d.day }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="background:{{ theme.cardBg }}; border-radius:20px; padding:24px; box-shadow:0 10px 26px -16px rgba(28,29,33,0.12); margin-bottom:20px">
+        <div style="font-family:'Poppins',sans-serif; font-weight:700; font-size:16px; margin-bottom:6px">Μηνιαία τάση εσόδων / εξόδων</div>
+        <div style="display:flex; gap:16px; font-size:12.5px; color:{{ theme.muted }}; margin-bottom:16px">
+          <span>● Έσοδα</span><span>● Έξοδα</span>
+        </div>
+        <div style="display:flex; align-items:flex-end; gap:22px; height:160px">
+          <sc-for list="{{ financeMonths }}" as="m" hint-placeholder-count="6">
+            <div style="display:flex; flex-direction:column; align-items:center; gap:8px; flex:1">
+              <div style="display:flex; align-items:flex-end; gap:5px; height:130px">
+                <div style="width:16px; border-radius:6px 6px 3px 3px; background:#5B6EF5; height:{{ m.incomePct }}%"></div>
+                <div style="width:16px; border-radius:6px 6px 3px 3px; background:#5B6EF5; height:{{ m.expensePct }}%"></div>
+              </div>
+              <div style="font-size:12px; color:{{ theme.muted }}">{{ m.month }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="background:{{ theme.cardBg }}; border-radius:20px; box-shadow:0 10px 26px -16px rgba(28,29,33,0.12); overflow:hidden">
+        <div style="font-family:'Poppins',sans-serif; font-weight:700; font-size:16px; padding:20px 24px 6px 24px">Πρόσφατες συναλλαγές</div>
+        <sc-for list="{{ transactions }}" as="tx" hint-placeholder-count="5">
+          <div style="display:flex; justify-content:space-between; align-items:center; padding:14px 24px; border-top:1px solid {{ theme.border }}">
+            <div>
+              <div style="font-size:14px; font-weight:600">{{ tx.label }}</div>
+              <div style="font-size:12px; color:{{ theme.muted }}">{{ tx.date }}</div>
+            </div>
+            <div style="font-size:14.5px; font-weight:700; color:{{ tx.color }}">{{ tx.amountLabel }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </sc-if>
+
+  </main>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    view: 'overview',
+    darkMode: false,
+    navOrder: ['overview', 'crm', 'todo', 'finance', 'tefteri'],
+    dragKey: null,
+    crmQuery: '',
+    calYear: 2026,
+    calMonth: 6,
+    selectedDate: '2026-07-31',
+    newTaskText: '',
+    tasks: [
+      { id: 1, dateISO: '2026-07-31', text: 'Απογραφή ψυγείου φαρμάκων' },
+      { id: 2, dateISO: '2026-08-05', text: 'Παραγγελία φαρμακαποθήκης' },
+      { id: 3, dateISO: '2026-08-12', text: 'Ραντεβού με προμηθευτή εξοπλισμού' }
+    ],
+    todos: [
+      { id: 1, drug: 'Augmentin 1g', patient: 'Γ. Νικολάου', qty: '2 κουτιά', dateISO: '2026-07-24', status: 'pending' },
+      { id: 2, drug: 'Depon 500mg', patient: 'Μ. Ζαχαρίου', qty: '1 κουτί', dateISO: '2026-07-25', status: 'pending' },
+      { id: 3, drug: 'Ventolin spray', patient: 'Α. Κωστάκη', qty: '1 τεμ.', dateISO: '2026-07-20', status: 'done' },
+      { id: 4, drug: 'Xanax 0,5mg', patient: 'Ε. Δημητρίου', qty: '1 κουτί', dateISO: '2026-07-31', status: 'pending' },
+      { id: 5, drug: 'Nurofen 400mg', patient: 'Σ. Παππά', qty: '1 κουτί', dateISO: '2026-07-18', status: 'done' },
+      { id: 6, drug: 'Lantus SoloStar', patient: 'Θ. Οικονόμου', qty: '1 πένα', dateISO: '2026-07-31', status: 'pending' },
+      { id: 7, drug: 'Aspirin 100mg', patient: 'Κ. Βλάχου', qty: '2 κουτιά', dateISO: '2026-07-26', status: 'pending' },
+      { id: 8, drug: 'Betadine', patient: 'Ν. Ρίζου', qty: '1 τεμ.', dateISO: '2026-07-15', status: 'done' }
+    ],
+    tefteri: [
+      { id: 1, customer: 'Νίκος Παπαδόπουλος', amount: 45, dateISO: '2026-07-20', note: 'Αγορά χωρίς μετρητά', paid: false },
+      { id: 2, customer: 'Ελένη Σταύρου', amount: 18.5, dateISO: '2026-07-26', note: 'Θα πληρώσει Παρασκευή', paid: false },
+      { id: 3, customer: 'Γιώργος Μιχαήλ', amount: 60, dateISO: '2026-07-10', note: 'Εξοφλήθηκε', paid: true },
+      { id: 4, customer: 'Δέσποινα Ρήγα', amount: 12.3, dateISO: '2026-07-29', note: '', paid: false }
+    ],
+    customers: [
+      { id: 1, name: 'Γεωργία Νικολάου', initials: 'ΓΝ', color: '#5B6EF5', lastVisit: '24/07/2026', tags: ['Χρόνια αγωγή', 'Υπέρταση'], note: 'Παίρνει τακτικά αντιυπερτασικά, να θυμίζουμε επανάληψη κάθε μήνα.' },
+      { id: 2, name: 'Μαρία Ζαχαρίου', initials: 'ΜΖ', color: '#8B93F0', lastVisit: '25/07/2026', tags: ['Αλλεργία σε πενικιλίνη'], note: 'Προσοχή σε εναλλακτικά αντιβιοτικά, ενημερωμένος φάκελος.' },
+      { id: 3, name: 'Αντώνης Κωστάκης', initials: 'ΑΚ', color: '#3E4FD1', lastVisit: '20/07/2026', tags: ['Άσθμα'], note: 'Χρήση Ventolin κατ’ επίκληση, τελευταία συνταγή έληξε.' },
+      { id: 4, name: 'Ελένη Δημητρίου', initials: 'ΕΔ', color: '#8B93F0', lastVisit: '27/07/2026', tags: ['Ψυχοφάρμακα'], note: 'Χρειάζεται νέα ιατρική συνταγή για επόμενη χορήγηση.' },
+      { id: 5, name: 'Σοφία Παππά', initials: 'ΣΠ', color: '#8B93F0', lastVisit: '18/07/2026', tags: ['Χρόνια αγωγή', 'Διαβήτης'], note: 'Ελέγχει σάκχαρο τακτικά, ζήτησε ενημέρωση για νέα ταινίες μέτρησης.' },
+      { id: 6, name: 'Θάνος Οικονόμου', initials: 'ΘΟ', color: '#3E4FD1', lastVisit: '29/07/2026', tags: ['Διαβήτης', 'Ινσουλίνη'], note: 'Χρειάζεται μηνιαία δανεικά πένας ινσουλίνης μέχρι νέα παραγγελία.' }
+    ]
+  };
+
+  navStyleFor(key) {
+    const active = this.state.view === key;
+    const t = this.theme();
+    return {
+      bg: active ? t.activeNav : 'transparent',
+      color: active ? t.text : t.muted,
+      icon: active ? t.text : t.muted
+    };
+  }
+
+  theme() {
+    return this.state.darkMode ? {
+      pageBg: '#1A1B2E', sidebarBg: '#20213A', cardBg: '#242640', border: '#33355A',
+      text: '#E8E9F5', muted: '#9497BE', inputBg: '#2A2C48', activeNav: 'rgba(91,110,245,0.25)'
+    } : {
+      pageBg: '#F5F6FB', sidebarBg: '#FFFFFF', cardBg: '#FFFFFF', border: '#E7E9F5',
+      text: '#1D2144', muted: '#8A8FA3', inputBg: '#FFFFFF', activeNav: '#EDEFFC'
+    };
+  }
+
+  navMeta(key) {
+    const s = (paths) => React.createElement('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: this.navStyleFor(key).icon, strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }, paths);
+    const defs = {
+      overview: { label: 'Επισκόπηση', go: () => this.setState({ view: 'overview' }), paths: [React.createElement('path', { key: 1, d: 'M3 10.5 12 3l9 7.5' }), React.createElement('path', { key: 2, d: 'M5 9.5V21h14V9.5' })] },
+      crm: { label: 'Πελάτες', go: () => this.setState({ view: 'crm' }), paths: [React.createElement('circle', { key: 1, cx: 9, cy: 8, r: 3.2 }), React.createElement('path', { key: 2, d: 'M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6' }), React.createElement('circle', { key: 3, cx: 17.5, cy: 8.5, r: 2.4 }), React.createElement('path', { key: 4, d: 'M15.8 14.2c2.9 0.3 4.9 2.3 4.9 5.8' })] },
+      todo: { label: 'Εκκρεμότητες', go: () => this.setState({ view: 'todo' }), paths: [React.createElement('rect', { key: 1, x: 4, y: 4, width: 16, height: 16, rx: 4 }), React.createElement('path', { key: 2, d: 'm8.5 12 2.3 2.3L16 9.5' })] },
+      finance: { label: 'Οικονομικά', go: () => this.setState({ view: 'finance' }), paths: [React.createElement('rect', { key: 1, x: 3, y: 6, width: 18, height: 13, rx: 3 }), React.createElement('path', { key: 2, d: 'M3 10h18' }), React.createElement('circle', { key: 3, cx: 16.5, cy: 14.2, r: 1.3 })] },
+      tefteri: { label: 'Τεφτέρι', go: () => this.setState({ view: 'tefteri' }), paths: [React.createElement('rect', { key: 1, x: 4, y: 3, width: 16, height: 18, rx: 2 }), React.createElement('path', { key: 2, d: 'M8 8h8M8 12h8M8 16h5' })] }
+    };
+    const d = defs[key];
+    return { ...d, icon: s(d.paths) };
+  }
+
+  navItemFor(key) {
+    const meta = this.navMeta(key);
+    const style = this.navStyleFor(key);
+    return {
+      key, label: meta.label, icon: meta.icon, onClick: meta.go,
+      bg: style.bg, color: style.color,
+      opacity: this.state.dragKey === key ? 0.4 : 1,
+      onDragStart: () => this.setState({ dragKey: key }),
+      onDragOver: (e) => e.preventDefault(),
+      onDragEnd: () => this.setState({ dragKey: null }),
+      onDrop: (e) => {
+        e.preventDefault();
+        const from = this.state.dragKey;
+        if (!from || from === key) return;
+        const order = [...this.state.navOrder];
+        const fromIdx = order.indexOf(from);
+        const toIdx = order.indexOf(key);
+        order.splice(fromIdx, 1);
+        order.splice(toIdx, 0, from);
+        this.setState({ navOrder: order, dragKey: null });
+      }
+    };
+  }
+
+  fmtDate(iso) { return `${iso.slice(8, 10)}/${iso.slice(5, 7)}`; }
+
+  renderVals() {
+    const titles = { overview: 'Επισκόπηση', crm: 'Πελάτες & Σημειώσεις', todo: 'Εκκρεμότητες', finance: 'Οικονομικά Φαρμακείου', tefteri: 'Τεφτέρι' };
+    const salesRaw = [62, 78, 55, 90, 71, 96, 48];
+    const days = ['Δευ', 'Τρι', 'Τετ', 'Πεμ', 'Παρ', 'Σαβ', 'Κυρ'];
+    const maxSales = Math.max(...salesRaw);
+    const salesWeek = salesRaw.map((v, i) => ({ day: days[i], pct: Math.round((v / maxSales) * 100) }));
+
+    const monthsRaw = [
+      { month: 'Φεβ', income: 15200, expense: 4800 },
+      { month: 'Μαρ', income: 16800, expense: 5100 },
+      { month: 'Απρ', income: 14500, expense: 4600 },
+      { month: 'Μαι', income: 17600, expense: 5400 },
+      { month: 'Ιουν', income: 16200, expense: 4900 },
+      { month: 'Ιουλ', income: 18420, expense: 5310 }
+    ];
+    const maxFin = Math.max(...monthsRaw.map(m => Math.max(m.income, m.expense)));
+    const financeMonths = monthsRaw.map(m => ({ month: m.month, incomePct: Math.round((m.income / maxFin) * 100), expensePct: Math.round((m.expense / maxFin) * 100) }));
+
+    const today = '2026-07-31';
+    const pendingTodos = this.state.todos.filter(t => t.status === 'pending');
+    const toggleTodo = (id) => this.setState(s => ({ todos: s.todos.map(x => x.id === id ? { ...x, status: 'done' } : x) }));
+    const todayTodos = pendingTodos.filter(t => t.dateISO === today).map(t => ({ ...t, date: this.fmtDate(t.dateISO), toggle: () => toggleTodo(t.id) }));
+    const overdueTodos = pendingTodos.filter(t => t.dateISO < today)
+      .sort((a, b) => a.dateISO.localeCompare(b.dateISO))
+      .map(t => ({ ...t, date: this.fmtDate(t.dateISO), toggle: () => toggleTodo(t.id) }));
+
+    const toggleTefteri = (id) => this.setState(s => ({ tefteri: s.tefteri.map(x => x.id === id ? { ...x, paid: !x.paid } : x) }));
+    const tefteriEntries = [...this.state.tefteri]
+      .sort((a, b) => a.paid - b.paid)
+      .map(e => ({
+        ...e,
+        date: this.fmtDate(e.dateISO),
+        amountLabel: '€' + e.amount.toFixed(2).replace('.', ','),
+        strike: e.paid ? 'line-through' : 'none',
+        boxBg: e.paid ? '#5B6EF5' : 'transparent',
+        toggle: () => toggleTefteri(e.id)
+      }));
+    const tefteriTotal = '€' + this.state.tefteri.filter(e => !e.paid).reduce((sum, e) => sum + e.amount, 0).toFixed(2).replace('.', ',');
+
+    const monthNames = ['Ιανουάριος', 'Φεβρουάριος', 'Μάρτιος', 'Απρίλιος', 'Μάιος', 'Ιούνιος', 'Ιούλιος', 'Αύγουστος', 'Σεπτέμβριος', 'Οκτώβριος', 'Νοέμβριος', 'Δεκέμβριος'];
+    const dayLabels = ['Δε', 'Τρ', 'Τε', 'Πε', 'Πα', 'Σα', 'Κυ'];
+    const pad = n => n < 10 ? '0' + n : '' + n;
+    const { calYear, calMonth, selectedDate } = this.state;
+    const firstWeekday = (new Date(calYear, calMonth, 1).getDay() + 6) % 7;
+    const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+    const calCells = [];
+    for (let i = 0; i < firstWeekday; i++) calCells.push({ blank: true, day: '', cursor: 'default', bg: 'transparent', color: 'transparent', hasTasks: false, select: () => {} });
+    for (let d = 1; d <= daysInMonth; d++) {
+      const iso = `${calYear}-${pad(calMonth + 1)}-${pad(d)}`;
+      const isToday = iso === today;
+      const isSelected = iso === selectedDate;
+      const t = this.theme();
+      calCells.push({
+        day: d, cursor: 'pointer',
+        hasTasks: this.state.tasks.some(t => t.dateISO === iso),
+        bg: isSelected ? '#5B6EF5' : isToday ? t.activeNav : 'transparent',
+        color: isSelected ? '#FFFFFF' : t.text,
+        select: () => this.setState({ selectedDate: iso })
+      });
+    }
+    const calLabel = `${monthNames[calMonth]} ${calYear}`;
+    const selectedLabel = `${parseInt(selectedDate.slice(8, 10))} ${monthNames[parseInt(selectedDate.slice(5, 7)) - 1]}`;
+    const tasksForSelected = this.state.tasks.filter(t => t.dateISO === selectedDate);
+    const prevMonth = () => this.setState(s => { let m = s.calMonth - 1, y = s.calYear; if (m < 0) { m = 11; y--; } return { calMonth: m, calYear: y }; });
+    const nextMonth = () => this.setState(s => { let m = s.calMonth + 1, y = s.calYear; if (m > 11) { m = 0; y++; } return { calMonth: m, calYear: y }; });
+    const addTask = () => { if (!this.state.newTaskText.trim()) return; this.setState(s => ({ tasks: [...s.tasks, { id: Date.now(), dateISO: s.selectedDate, text: s.newTaskText.trim() }], newTaskText: '' })); };
+
+    const q = this.state.crmQuery.toLowerCase();
+    const filteredCustomers = this.state.customers.filter(c => c.name.toLowerCase().includes(q));
+
+    const transactions = [
+      { label: 'Πώληση συνταγής – Νικολάου Γ.', date: 'Σήμερα, 10:42', amountLabel: '+€38,20', color: '#4453D8' },
+      { label: 'Παραγγελία φαρμακαποθήκης', date: 'Σήμερα, 09:15', amountLabel: '−€620,00', color: '#EF5C6E' },
+      { label: 'Πώληση παραφαρμακευτικών', date: 'Χθες, 18:03', amountLabel: '+€54,90', color: '#4453D8' },
+      { label: 'Λογαριασμός ΔΕΗ', date: 'Χθες, 12:00', amountLabel: '−€142,30', color: '#EF5C6E' },
+      { label: 'Πώληση συνταγής – Ζαχαρίου Μ.', date: '29/07, 16:20', amountLabel: '+€22,60', color: '#4453D8' }
+    ];
+
+    const theme = this.theme();
+    const themeIcon = this.state.darkMode
+      ? React.createElement('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: '#E8E9F5', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('circle', { cx: 12, cy: 12, r: 5 }), React.createElement('path', { d: 'M12 1v2M12 21v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M1 12h2M21 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4' }))
+      : React.createElement('svg', { width: 18, height: 18, viewBox: '0 0 24 24', fill: 'none', stroke: '#1D2144', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('path', { d: 'M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z' }));
+
+    return {
+      theme,
+      themeIcon,
+      toggleDarkMode: () => this.setState(s => ({ darkMode: !s.darkMode })),
+      pageTitle: titles[this.state.view],
+      isOverview: this.state.view === 'overview',
+      isCrm: this.state.view === 'crm',
+      isTodo: this.state.view === 'todo',
+      isFinance: this.state.view === 'finance',
+      isTefteri: this.state.view === 'tefteri',
+      goOverview: () => this.setState({ view: 'overview' }),
+      goCrm: () => this.setState({ view: 'crm' }),
+      goTodo: () => this.setState({ view: 'todo' }),
+      goFinance: () => this.setState({ view: 'finance' }),
+      goTefteri: () => this.setState({ view: 'tefteri' }),
+      navItems: this.state.navOrder.map(key => this.navItemFor(key)),
+      salesWeek,
+      financeMonths,
+      pendingCount: this.state.todos.filter(t => t.status === 'pending').length,
+      customerPreview: this.state.customers.slice(0, 3),
+      todayTodos,
+      todoPreview: overdueTodos.slice(0, 3),
+      crmQuery: this.state.crmQuery,
+      onCrmSearch: (e) => this.setState({ crmQuery: e.target.value }),
+      filteredCustomers,
+      overdueTodos,
+      tefteriEntries,
+      tefteriTotal,
+      calLabel,
+      dayLabels,
+      calCells,
+      selectedLabel,
+      tasksForSelected,
+      newTaskText: this.state.newTaskText,
+      onTaskInput: (e) => this.setState({ newTaskText: e.target.value }),
+      addTask,
+      prevMonth,
+      nextMonth,
+      transactions
+    };
+  }
+}
+
+</script>
+</body>
+</html>
