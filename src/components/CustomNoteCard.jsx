@@ -24,9 +24,11 @@ export default function CustomNoteCard({ card, onRename, onAddItem, onRemove }) 
       </div>
       <div className="mb-3">
         {card.items.map((it) => (
-          <div key={it.id} className="flex items-center gap-2.5 py-2 border-t border-[var(--line)]">
-            <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-            <div className="text-[13px] text-[var(--text)]">{it.text}</div>
+          <div key={it.id} className="flex items-start gap-2.5 py-2 border-t border-[var(--line)]">
+            <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-1.5" />
+            <div className="text-[13px] text-[var(--text)] min-w-0 flex-1 break-words whitespace-pre-wrap">
+              {it.text}
+            </div>
           </div>
         ))}
       </div>

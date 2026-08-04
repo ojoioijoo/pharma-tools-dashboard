@@ -10,7 +10,8 @@ import { usePharmacyStore } from './hooks/usePharmacyStore.js';
 
 export default function Dashboard({ onLogout }) {
   const store = usePharmacyStore();
-  const { view, goTo, pageTitle, darkMode, toggleDarkMode, navItems, dragKey, setDragKey, reorderNav } = store;
+  const { view, goTo, pageTitle, darkMode, toggleDarkMode, navItems, dragKey, setDragKey, reorderNav, syncStatus } =
+    store;
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode);
@@ -28,7 +29,7 @@ export default function Dashboard({ onLogout }) {
       />
 
       <main className="flex-1 px-11 pt-[34px] pb-[50px] overflow-y-auto">
-        <TopBar pageTitle={pageTitle} darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+        <TopBar pageTitle={pageTitle} darkMode={darkMode} toggleDarkMode={toggleDarkMode} syncStatus={syncStatus} />
 
         {view === 'overview' && <OverviewView store={store} goTo={goTo} />}
         {view === 'crm' && <CrmView store={store} />}

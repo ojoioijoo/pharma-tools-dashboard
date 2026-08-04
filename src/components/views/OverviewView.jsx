@@ -36,9 +36,9 @@ export default function OverviewView({ store, goTo }) {
           </div>
           <div className="mb-3 min-h-[40px]">
             {tasksForSelected.map((tk) => (
-              <div key={tk.id} className="flex items-center gap-2.5 py-2 border-t border-[var(--line)]">
-                <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-                <div className="text-[13px] text-[var(--text)]">{tk.text}</div>
+              <div key={tk.id} className="flex items-start gap-2.5 py-2 border-t border-[var(--line)]">
+                <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-1.5" />
+                <div className="text-[13px] text-[var(--text)] min-w-0 flex-1 break-words">{tk.text}</div>
               </div>
             ))}
           </div>
@@ -92,8 +92,8 @@ export default function OverviewView({ store, goTo }) {
                 <div className="w-[30px] h-[30px] rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 bg-primary text-white">
                   ✎
                 </div>
-                <div className="min-w-0">
-                  <div className="text-[11.5px] text-[var(--text)]">{n.text}</div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-[11.5px] text-[var(--text)] break-words whitespace-pre-wrap">{n.text}</div>
                 </div>
               </div>
             ))}
@@ -148,7 +148,7 @@ export default function OverviewView({ store, goTo }) {
               <div key={t.id} className="flex items-center gap-2.5 py-[9px] border-t border-[var(--line)]">
                 <div className="w-[18px] h-[18px] rounded-md border-2 border-primary shrink-0 bg-[var(--input-bg)]" />
                 <div className="flex-1 min-w-0">
-                  <div className="text-[13px] font-semibold text-[var(--text)]">{t.drug}</div>
+                  <div className="text-[13px] font-semibold text-[var(--text)] break-words">{t.drug}</div>
                   <div className="text-[11px] text-[var(--muted)]">
                     {t.patient ? `${t.patient} · ` : ''}
                     {t.date}

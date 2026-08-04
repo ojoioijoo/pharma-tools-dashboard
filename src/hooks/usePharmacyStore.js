@@ -33,11 +33,16 @@ const MONTH_NAMES = [
 ];
 const DAY_LABELS = ['Δε', 'Τρ', 'Τε', 'Πε', 'Πα', 'Σα', 'Κυ'];
 
-// Πρωτότυπο "σήμερα" — θα αντικατασταθεί από πραγματική ημερομηνία όταν συνδεθεί το backend.
-const TODAY = '2026-07-31';
-
 const pad = (n) => (n < 10 ? '0' + n : '' + n);
 const fmtDate = (iso) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`;
+
+function todayISO() {
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+// Υπολογίζεται στη φόρτωση του module (κάθε reload της σελίδας παίρνει τη σωστή ημέρα).
+const TODAY = todayISO();
 
 function moveItem(order, fromKey, toKey) {
   if (!fromKey || fromKey === toKey) return order;
@@ -53,9 +58,9 @@ export function usePharmacyStore() {
   const [navOrder, setNavOrder] = useState(['overview', 'crm', 'todo', 'finance', 'tefteri']);
   const [dragKey, setDragKey] = useState(null);
   const [crmQuery, setCrmQuery] = useState('');
-  const [calYear, setCalYear] = useState(2026);
-  const [calMonth, setCalMonth] = useState(6);
-  const [selectedDate, setSelectedDate] = useState('2026-07-31');
+  const [calYear, setCalYear] = useState(Number(TODAY.slice(0, 4)));
+  const [calMonth, setCalMonth] = useState(Number(TODAY.slice(5, 7)) - 1);
+  const [selectedDate, setSelectedDate] = useState(TODAY);
   const [newTaskText, setNewTaskText] = useState('');
   const [tasks, setTasks] = useState(initialTasks);
   const [todos, setTodos] = useState(initialTodos);
@@ -68,7 +73,37 @@ export function usePharmacyStore() {
   const [overviewDragKey, setOverviewDragKey] = useState(null);
   const [customCards, setCustomCards] = useState([]);
 
+  const [syncStatus, setSyncStatus] = useState('idle'); // idle | syncing | synced | error
   const hydrated = useRef(false);
+  const pendingSaves = useRef(0);
+
+  const persist = (name, value) => {
+    if (!hydrated.current) return;
+    pendingSaves.current += 1;
+    setSyncStatus('syncing');
+    saveCollection(name, value)
+      .then(() => {
+        pendingSaves.current = Math.max(0, pendingSaves.current - 1);
+        if (pendingSaves.current === 0) setSyncStatus('synced');
+      })
+      .catch(() => {
+        pendingSaves.current = Math.max(0, pendingSaves.current - 1);
+        setSyncStatus('error');
+      });
+  };
+
+  // Προειδοποίηση αν ο χρήστης κλείσει/κάνει refresh ενώ εκκρεμεί αποθήκευση,
+  // ώστε να μη χάνεται ό,τι μόλις γράφτηκε.
+  useEffect(() => {
+    const handler = (e) => {
+      if (syncStatus === 'syncing') {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [syncStatus]);
 
   // Αρχικό φόρτωμα από το Redis (μέσω /api). Αν αποτύχει (π.χ. τοπικό `vite dev`
   // χωρίς `vercel dev`), κρατάμε τα mock δεδομένα ως έχουν.
@@ -76,11 +111,13 @@ export function usePharmacyStore() {
     let cancelled = false;
     (async () => {
       try {
-        const [t, td, tf, cu] = await Promise.all([
+        const [t, td, tf, cu, qn, cc] = await Promise.all([
           fetchCollection('tasks'),
           fetchCollection('todos'),
           fetchCollection('tefteri'),
           fetchCollection('customers'),
+          fetchCollection('notes'),
+          fetchCollection('cards'),
         ]);
         if (cancelled) return;
         if (t.length) setTasks(t);
@@ -91,8 +128,17 @@ export function usePharmacyStore() {
         else saveCollection('tefteri', initialTefteri).catch(() => {});
         if (cu.length) setCustomers(cu);
         else saveCollection('customers', initialCustomers).catch(() => {});
+        setQuickNotes(qn);
+        setCustomCards(cc);
+        setOverviewOrder((prev) => {
+          const cardIds = cc.map((c) => c.id);
+          const kept = prev.filter((k) => !k.startsWith('custom-'));
+          return [...kept, ...cardIds];
+        });
+        setSyncStatus('synced');
       } catch {
         // API μη διαθέσιμο — παραμένουμε στα τοπικά mock δεδομένα.
+        setSyncStatus('error');
       } finally {
         if (!cancelled) hydrated.current = true;
       }
@@ -102,18 +148,12 @@ export function usePharmacyStore() {
     };
   }, []);
 
-  useEffect(() => {
-    if (hydrated.current) saveCollection('tasks', tasks).catch(() => {});
-  }, [tasks]);
-  useEffect(() => {
-    if (hydrated.current) saveCollection('todos', todos).catch(() => {});
-  }, [todos]);
-  useEffect(() => {
-    if (hydrated.current) saveCollection('tefteri', tefteri).catch(() => {});
-  }, [tefteri]);
-  useEffect(() => {
-    if (hydrated.current) saveCollection('customers', customers).catch(() => {});
-  }, [customers]);
+  useEffect(() => persist('tasks', tasks), [tasks]);
+  useEffect(() => persist('todos', todos), [todos]);
+  useEffect(() => persist('tefteri', tefteri), [tefteri]);
+  useEffect(() => persist('customers', customers), [customers]);
+  useEffect(() => persist('notes', quickNotes), [quickNotes]);
+  useEffect(() => persist('cards', customCards), [customCards]);
 
   const toggleDarkMode = () => setDarkMode((v) => !v);
 
@@ -268,6 +308,7 @@ export function usePharmacyStore() {
     pageTitle: TITLES[view],
     darkMode,
     toggleDarkMode,
+    syncStatus,
 
     navItems,
     dragKey,

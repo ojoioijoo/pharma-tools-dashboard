@@ -98,6 +98,32 @@ export function MoonIcon(props) {
   );
 }
 
+export function SyncIcon(props) {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" {...base} {...props}>
+      <path d="M21 12a9 9 0 1 1-2.64-6.36" />
+      <path d="M21 3v6h-6" />
+    </svg>
+  );
+}
+
+export function CheckIcon(props) {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" {...base} {...props}>
+      <path d="M20 6 9 17l-5-5" />
+    </svg>
+  );
+}
+
+export function WarningIcon(props) {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" {...base} {...props}>
+      <path d="M12 9v4M12 17h.01" />
+      <path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z" />
+    </svg>
+  );
+}
+
 export const NAV_ICONS = {
   overview: OverviewIcon,
   crm: CrmIcon,
