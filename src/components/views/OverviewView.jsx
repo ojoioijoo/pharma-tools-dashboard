@@ -204,12 +204,12 @@ export default function OverviewView({ store, goTo }) {
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 items-start">
+    <div className="columns-1 sm:columns-2 xl:columns-4 gap-5">
       {overviewOrder.map(renderWidget)}
 
       <div
         onClick={addCustomCard}
-        className="min-w-0 min-h-[120px] rounded-[20px] border-2 border-dashed border-[var(--line)] flex items-center justify-center cursor-pointer text-[var(--muted)] hover:text-primary hover:border-primary transition-colors"
+        className="min-w-0 mb-5 min-h-[120px] break-inside-avoid rounded-[20px] border-2 border-dashed border-[var(--line)] flex items-center justify-center cursor-pointer text-[var(--muted)] hover:text-primary hover:border-primary transition-colors"
       >
         <span className="text-2xl font-bold leading-none">+</span>
       </div>
