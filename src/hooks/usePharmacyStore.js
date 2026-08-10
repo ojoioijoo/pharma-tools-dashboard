@@ -52,6 +52,26 @@ function moveItem(order, fromKey, toKey) {
   return next;
 }
 
+// Σημειώσεις ημερολογίου σε περασμένη ημερομηνία που δεν έχουν τικαριστεί
+// μεταφέρονται αυτόματα στις εκκρεμότητες.
+function migrateOverdueTasks(tasks, todos) {
+  const overdue = tasks.filter((t) => t.dateISO < TODAY && !t.done);
+  if (!overdue.length) return { tasks, todos };
+  const overdueIds = new Set(overdue.map((t) => t.id));
+  const migrated = overdue.map((t) => ({
+    id: `mig-${t.id}-${Date.now()}`,
+    drug: t.text,
+    patient: '',
+    qty: '',
+    dateISO: t.dateISO,
+    status: 'pending',
+  }));
+  return {
+    tasks: tasks.filter((t) => !overdueIds.has(t.id)),
+    todos: [...migrated, ...todos],
+  };
+}
+
 export function usePharmacyStore() {
   const [view, setView] = useState('overview');
   const [darkMode, setDarkMode] = useState(false);
@@ -67,9 +87,7 @@ export function usePharmacyStore() {
   const [newTodoText, setNewTodoText] = useState('');
   const [tefteri, setTefteri] = useState(initialTefteri);
   const [customers, setCustomers] = useState(initialCustomers);
-  const [quickNotes, setQuickNotes] = useState([]);
-  const [newNoteText, setNewNoteText] = useState('');
-  const [overviewOrder, setOverviewOrder] = useState(['tasks', 'calendar', 'notes', 'todos']);
+  const [overviewOrder, setOverviewOrder] = useState(['tasks', 'calendar', 'todos', 'tefteri']);
   const [overviewDragKey, setOverviewDragKey] = useState(null);
   const [customCards, setCustomCards] = useState([]);
 
@@ -110,38 +128,49 @@ export function usePharmacyStore() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      let ft = [];
+      let ftd = [];
+      let tf = [];
+      let cu = [];
+      let cc = [];
       try {
-        const [t, td, tf, cu, qn, cc] = await Promise.all([
+        [ft, ftd, tf, cu, cc] = await Promise.all([
           fetchCollection('tasks'),
           fetchCollection('todos'),
           fetchCollection('tefteri'),
           fetchCollection('customers'),
-          fetchCollection('notes'),
           fetchCollection('cards'),
         ]);
         if (cancelled) return;
-        if (t.length) setTasks(t);
-        else saveCollection('tasks', initialTasks).catch(() => {});
-        if (td.length) setTodos(td);
-        else saveCollection('todos', initialTodos).catch(() => {});
-        if (tf.length) setTefteri(tf);
-        else saveCollection('tefteri', initialTefteri).catch(() => {});
-        if (cu.length) setCustomers(cu);
-        else saveCollection('customers', initialCustomers).catch(() => {});
-        setQuickNotes(qn);
-        setCustomCards(cc);
-        setOverviewOrder((prev) => {
-          const cardIds = cc.map((c) => c.id);
-          const kept = prev.filter((k) => !k.startsWith('custom-'));
-          return [...kept, ...cardIds];
-        });
         setSyncStatus('synced');
       } catch {
         // API μη διαθέσιμο — παραμένουμε στα τοπικά mock δεδομένα.
+        if (cancelled) return;
         setSyncStatus('error');
-      } finally {
-        if (!cancelled) hydrated.current = true;
       }
+      if (cancelled) return;
+
+      const { tasks: t, todos: td } = migrateOverdueTasks(
+        ft.length ? ft : initialTasks,
+        ftd.length ? ftd : initialTodos,
+      );
+      setTasks(t);
+      setTodos(td);
+      if (!ft.length) saveCollection('tasks', t).catch(() => {});
+      if (!ftd.length) saveCollection('todos', td).catch(() => {});
+
+      if (tf.length) setTefteri(tf);
+      else saveCollection('tefteri', initialTefteri).catch(() => {});
+      if (cu.length) setCustomers(cu);
+      else saveCollection('customers', initialCustomers).catch(() => {});
+      setCustomCards(cc);
+      setOverviewOrder((prev) => {
+        const cardIds = cc.map((c) => c.id);
+        const kept = prev.filter((k) => !k.startsWith('custom-'));
+        return [...kept, ...cardIds];
+      });
+
+      hydrated.current = true;
     })();
     return () => {
       cancelled = true;
@@ -152,7 +181,6 @@ export function usePharmacyStore() {
   useEffect(() => persist('todos', todos), [todos]);
   useEffect(() => persist('tefteri', tefteri), [tefteri]);
   useEffect(() => persist('customers', customers), [customers]);
-  useEffect(() => persist('notes', quickNotes), [quickNotes]);
   useEffect(() => persist('cards', customCards), [customCards]);
 
   const toggleDarkMode = () => setDarkMode((v) => !v);
@@ -273,18 +301,6 @@ export function usePharmacyStore() {
     setNewTodoText('');
   };
 
-  const addQuickNote = () => {
-    const text = newNoteText.trim();
-    if (!text) return;
-    setQuickNotes((prev) => [{ id: Date.now(), text, done: false }, ...prev]);
-    setNewNoteText('');
-  };
-
-  const toggleQuickNote = (id) =>
-    setQuickNotes((prev) => prev.map((n) => (n.id === id ? { ...n, done: !n.done } : n)));
-
-  const deleteQuickNote = (id) => setQuickNotes((prev) => prev.filter((n) => n.id !== id));
-
   const tefteriEntries = useMemo(
     () =>
       [...tefteri]
@@ -311,7 +327,6 @@ export function usePharmacyStore() {
     const q = crmQuery.toLowerCase();
     return customers.filter((c) => c.name.toLowerCase().includes(q));
   }, [customers, crmQuery]);
-  const customerPreview = customers.slice(0, 3);
 
   return {
     view,
@@ -340,18 +355,10 @@ export function usePharmacyStore() {
     toggleTask,
     deleteTask,
 
-    customerPreview,
     todoPreview,
     newTodoText,
     setNewTodoText,
     addTodoQuick,
-
-    quickNotes,
-    newNoteText,
-    setNewNoteText,
-    addQuickNote,
-    toggleQuickNote,
-    deleteQuickNote,
 
     overviewOrder,
     overviewDragKey,

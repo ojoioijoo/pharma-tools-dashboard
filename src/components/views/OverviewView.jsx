@@ -97,73 +97,33 @@ export default function OverviewView({ store, goTo }) {
       );
     }
 
-    if (id === 'notes') {
+    if (id === 'tefteri') {
       return (
         <OverviewCard key={id} id={id} {...cardProps}>
-          <div className="mb-3.5">
-            <div className="font-heading font-bold text-sm mb-1 text-[var(--text)]">Πρόσφατες σημειώσεις</div>
-            <a href="#" onClick={(e) => { e.preventDefault(); goTo('crm'); }} className="text-[11.5px] font-semibold">
-              Όλες →
-            </a>
+          <div className="flex items-start justify-between mb-3.5">
+            <div>
+              <div className="font-heading font-bold text-sm mb-1 text-[var(--text)]">Τεφτέρι</div>
+              <a href="#" onClick={(e) => { e.preventDefault(); goTo('tefteri'); }} className="text-[11.5px] font-semibold">
+                Όλες →
+              </a>
+            </div>
+            <div className="font-heading font-bold text-sm text-[var(--text)]">{store.tefteriTotal}</div>
           </div>
-          <div className="mb-3">
-            {store.quickNotes.map((n) => (
-              <div key={n.id} className="flex items-start gap-2.5 py-2.5 border-t border-[var(--line)]">
+          <div>
+            {store.tefteriEntries.map((e) => (
+              <div key={e.id} className="flex items-center gap-2.5 py-[9px] border-t border-[var(--line)]">
                 <div
-                  onClick={() => store.toggleQuickNote(n.id)}
-                  className={`w-[18px] h-[18px] rounded-md border-2 border-primary shrink-0 cursor-pointer mt-0.5 ${
-                    n.done ? 'bg-primary' : 'bg-[var(--input-bg)]'
+                  onClick={() => store.toggleTefteri(e.id)}
+                  className={`w-[18px] h-[18px] rounded-md shrink-0 cursor-pointer border-2 border-primary ${
+                    e.paid ? 'bg-primary' : 'bg-transparent'
                   }`}
                 />
-                <div className="min-w-0 flex-1">
-                  <div
-                    className={`text-[11.5px] break-words whitespace-pre-wrap ${
-                      n.done ? 'line-through text-[var(--muted)]' : 'text-[var(--text)]'
-                    }`}
-                  >
-                    {n.text}
-                  </div>
+                <div className={`flex-1 min-w-0 ${e.paid ? 'line-through text-[var(--muted)]' : ''}`}>
+                  <div className="text-[13px] font-semibold text-[var(--text)] truncate">{e.customer}</div>
                 </div>
-                <div
-                  onClick={() => store.deleteQuickNote(n.id)}
-                  className="text-[var(--muted)] hover:text-danger cursor-pointer shrink-0 mt-0.5"
-                >
-                  <TrashIcon />
-                </div>
+                <div className="text-[12.5px] font-bold text-[var(--text)] shrink-0">{e.amountLabel}</div>
               </div>
             ))}
-            {store.customerPreview.map((c) => (
-              <div key={c.id} className="flex gap-2.5 py-2.5 border-t border-[var(--line)]">
-                <div
-                  className="w-[30px] h-[30px] rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 text-[var(--text)]"
-                  style={{ background: c.color }}
-                >
-                  {c.initials}
-                </div>
-                <div className="min-w-0">
-                  <div className="text-[13px] font-semibold text-[var(--text)]">{c.name}</div>
-                  <div className="text-[11.5px] text-[var(--muted)] overflow-hidden text-ellipsis whitespace-nowrap">
-                    {c.note}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="flex flex-col gap-1.5">
-            <input
-              type="text"
-              placeholder="Νέα σημείωση..."
-              value={store.newNoteText}
-              onChange={(e) => store.setNewNoteText(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && store.addQuickNote()}
-              className="w-full box-border border border-[var(--line)] bg-[var(--input-bg)] text-[var(--text)] rounded-[10px] px-2.5 py-2 text-[12.5px] font-sans outline-none"
-            />
-            <div
-              onClick={store.addQuickNote}
-              className="bg-primary text-white font-bold text-xs px-3 py-[7px] rounded-[10px] cursor-pointer text-center"
-            >
-              Προσθήκη
-            </div>
           </div>
         </OverviewCard>
       );
