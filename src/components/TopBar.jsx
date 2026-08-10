@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { SunIcon, MoonIcon, SyncIcon, CheckIcon, WarningIcon } from './icons.jsx';
+import { SunIcon, MoonIcon, SyncIcon, CheckIcon, WarningIcon, MenuIcon } from './icons.jsx';
 
 const SYNC_CONFIG = {
   syncing: { Icon: SyncIcon, label: 'Αποθήκευση...', className: 'animate-spin' },
@@ -19,7 +19,7 @@ function SyncBadge({ status }) {
   );
 }
 
-export default function TopBar({ pageTitle, darkMode, toggleDarkMode, syncStatus }) {
+export default function TopBar({ pageTitle, darkMode, toggleDarkMode, syncStatus, onOpenMenu }) {
   const dateLabel = useMemo(() => {
     const formatted = new Intl.DateTimeFormat('el-GR', {
       weekday: 'long',
@@ -31,14 +31,24 @@ export default function TopBar({ pageTitle, darkMode, toggleDarkMode, syncStatus
   }, []);
 
   return (
-    <div className="flex items-start justify-between mb-[30px]">
-      <div>
-        <div className="text-[13.5px] text-[var(--muted)] mb-1">Καλημέρα Στέφανε!</div>
-        <div className="font-heading font-bold text-[27px] text-[var(--text)]">{pageTitle}</div>
+    <div className="flex flex-wrap items-start justify-between gap-3 mb-6 sm:mb-[30px]">
+      <div className="flex items-center gap-3 min-w-0">
+        <div
+          onClick={onOpenMenu}
+          className="md:hidden shrink-0 w-[38px] h-[38px] rounded-xl bg-[var(--card-bg)] border border-[var(--line)] flex items-center justify-center cursor-pointer text-[var(--text)]"
+        >
+          <MenuIcon />
+        </div>
+        <div className="min-w-0">
+          <div className="text-[13.5px] text-[var(--muted)] mb-1">Καλημέρα Στέφανε!</div>
+          <div className="font-heading font-bold text-[22px] sm:text-[27px] text-[var(--text)] truncate">
+            {pageTitle}
+          </div>
+        </div>
       </div>
-      <div className="flex items-center gap-3.5">
+      <div className="flex items-center gap-2.5 sm:gap-3.5">
         <SyncBadge status={syncStatus} />
-        <div className="bg-[var(--card-bg)] border border-[var(--line)] px-4 py-[9px] rounded-xl text-[13.5px] font-semibold text-[var(--text)]">
+        <div className="hidden sm:block bg-[var(--card-bg)] border border-[var(--line)] px-4 py-[9px] rounded-xl text-[13.5px] font-semibold text-[var(--text)]">
           {dateLabel}
         </div>
         <div

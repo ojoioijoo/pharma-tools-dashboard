@@ -3,7 +3,7 @@ export default function CrmView({ store }) {
 
   return (
     <div className="bg-[var(--card-bg)] rounded-[20px] shadow-card overflow-hidden">
-      <div className="px-6 py-[18px] border-b border-[var(--line)]">
+      <div className="px-4 sm:px-6 py-[18px] border-b border-[var(--line)]">
         <input
           type="text"
           placeholder="Αναζήτηση πελάτη..."
@@ -13,7 +13,7 @@ export default function CrmView({ store }) {
         />
       </div>
       {filteredCustomers.map((c) => (
-        <div key={c.id} className="flex gap-4 px-6 py-[18px] border-b border-[var(--line)] items-start">
+        <div key={c.id} className="flex gap-3 sm:gap-4 px-4 sm:px-6 py-[18px] border-b border-[var(--line)] items-start">
           <div
             className="w-11 h-11 rounded-full flex items-center justify-center text-sm font-bold shrink-0 text-[var(--text)]"
             style={{ background: c.color }}
@@ -21,7 +21,7 @@ export default function CrmView({ store }) {
             {c.initials}
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2.5 mb-1">
+            <div className="flex flex-wrap items-center gap-x-2.5 gap-y-0.5 mb-1">
               <div className="text-[15px] font-bold text-[var(--text)]">{c.name}</div>
               <div className="text-xs text-[var(--muted)]">Τελ. επίσκεψη: {c.lastVisit}</div>
             </div>

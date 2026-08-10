@@ -98,6 +98,22 @@ export function MoonIcon(props) {
   );
 }
 
+export function MenuIcon(props) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" {...base} {...props}>
+      <path d="M3 6h18M3 12h18M3 18h18" />
+    </svg>
+  );
+}
+
+export function CloseIcon(props) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" {...base} {...props}>
+      <path d="M6 6l12 12M18 6 6 18" />
+    </svg>
+  );
+}
+
 export function TrashIcon(props) {
   return (
     <svg width="15" height="15" viewBox="0 0 24 24" {...base} {...props}>
