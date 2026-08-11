@@ -207,6 +207,7 @@ export default function OverviewView({ store, goTo }) {
                       className={`flex-1 min-w-0 cursor-pointer ${e.paid ? 'line-through text-[var(--muted)]' : ''}`}
                     >
                       <div className="text-[13px] font-semibold text-[var(--text)] truncate">{e.customer}</div>
+                      <div className="text-[11px] text-[var(--muted)]">{e.date}</div>
                     </div>
                     <div
                       onClick={() => startTefteriEdit(e)}

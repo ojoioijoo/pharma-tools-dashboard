@@ -74,9 +74,12 @@ export default function CustomNoteCard({ card, onRename, onAddItem, onEditItem, 
                   {it.text}
                 </div>
               )}
-              {it.updatedAt && (
+              {(it.createdAt || it.updatedAt) && (
                 <div className="text-[10.5px] text-[var(--muted)] mt-0.5">
-                  {fmtEditedAt(it.updatedAt)}
+                  {fmtEditedAt(it.createdAt || it.updatedAt)}
+                  {it.createdAt && it.updatedAt && it.updatedAt !== it.createdAt && (
+                    <> · επεξ. {fmtEditedAt(it.updatedAt)}</>
+                  )}
                 </div>
               )}
             </div>

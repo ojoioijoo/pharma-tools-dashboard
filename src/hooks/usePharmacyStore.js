@@ -205,7 +205,10 @@ export function usePharmacyStore() {
     setCustomCards((prev) =>
       prev.map((c) =>
         c.id === id
-          ? { ...c, items: [{ id: Date.now(), text, updatedAt: Date.now() }, ...c.items] }
+          ? {
+              ...c,
+              items: [{ id: Date.now(), text, createdAt: Date.now(), updatedAt: Date.now() }, ...c.items],
+            }
           : c,
       ),
     );
