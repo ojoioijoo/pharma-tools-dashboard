@@ -296,6 +296,9 @@ export function usePharmacyStore() {
   const toggleTask = (id) =>
     setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
 
+  const editTask = (id, text) =>
+    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, text } : t)));
+
   const deleteTask = (id) => setTasks((prev) => prev.filter((t) => t.id !== id));
 
   const overdueTodos = todos
@@ -306,6 +309,9 @@ export function usePharmacyStore() {
 
   const toggleTodo = (id) =>
     setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, status: 'done' } : t)));
+
+  const editTodo = (id, drug) =>
+    setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, drug } : t)));
 
   const deleteTodo = (id) => setTodos((prev) => prev.filter((t) => t.id !== id));
 
@@ -341,6 +347,9 @@ export function usePharmacyStore() {
   const toggleTefteri = (id) =>
     setTefteri((prev) => prev.map((e) => (e.id === id ? { ...e, paid: !e.paid } : e)));
 
+  const editTefteriEntry = (id, { customer, amount }) =>
+    setTefteri((prev) => prev.map((e) => (e.id === id ? { ...e, customer, amount } : e)));
+
   const filteredCustomers = useMemo(() => {
     const q = crmQuery.toLowerCase();
     return customers.filter((c) => c.name.toLowerCase().includes(q));
@@ -371,6 +380,7 @@ export function usePharmacyStore() {
     setNewTaskText,
     addTask,
     toggleTask,
+    editTask,
     deleteTask,
 
     todoPreview,
@@ -395,11 +405,13 @@ export function usePharmacyStore() {
 
     overdueTodos,
     toggleTodo,
+    editTodo,
     deleteTodo,
 
     tefteriEntries,
     tefteriTotal,
     toggleTefteri,
+    editTefteriEntry,
 
     salesWeek,
     financeMonths,
