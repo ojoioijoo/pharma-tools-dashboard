@@ -68,6 +68,7 @@ export default function CustomNoteCard({ card, onRename, onAddItem, onEditItem, 
               ) : (
                 <div
                   onClick={() => startEdit(it)}
+                  draggable={false}
                   className="text-[13px] text-[var(--text)] break-words whitespace-pre-wrap cursor-pointer"
                 >
                   {it.text}
