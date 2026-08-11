@@ -25,6 +25,7 @@ export default function OverviewView({ store, goTo }) {
     addCustomCard,
     renameCustomCard,
     addCustomCardItem,
+    editCustomCardItem,
     removeCustomCard,
   } = store;
 
@@ -197,6 +198,7 @@ export default function OverviewView({ store, goTo }) {
           card={card}
           onRename={(title) => renameCustomCard(card.id, title)}
           onAddItem={(text) => addCustomCardItem(card.id, text)}
+          onEditItem={(itemId, text) => editCustomCardItem(card.id, itemId, text)}
           onRemove={() => removeCustomCard(card.id)}
         />
       </OverviewCard>
@@ -209,7 +211,7 @@ export default function OverviewView({ store, goTo }) {
 
       <div
         onClick={addCustomCard}
-        className="min-w-0 mb-5 min-h-[120px] break-inside-avoid rounded-[20px] border-2 border-dashed border-[var(--line)] flex items-center justify-center cursor-pointer text-[var(--muted)] hover:text-primary hover:border-primary transition-colors"
+        className="min-w-0 mb-5 min-h-[120px] break-inside-avoid rounded-[20px] border-2 border-dashed border-[var(--line)] flex items-center justify-start px-5 cursor-pointer text-[var(--muted)] hover:text-primary hover:border-primary transition-colors"
       >
         <span className="text-2xl font-bold leading-none">+</span>
       </div>

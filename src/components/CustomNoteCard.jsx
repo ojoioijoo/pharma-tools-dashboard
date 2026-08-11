@@ -1,13 +1,35 @@
 import { useState } from 'react';
 
-export default function CustomNoteCard({ card, onRename, onAddItem, onRemove }) {
+const fmtEditedAt = (ts) =>
+  new Intl.DateTimeFormat('el-GR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  }).format(new Date(ts));
+
+export default function CustomNoteCard({ card, onRename, onAddItem, onEditItem, onRemove }) {
   const [draft, setDraft] = useState('');
+  const [editingId, setEditingId] = useState(null);
+  const [editDraft, setEditDraft] = useState('');
 
   const submit = () => {
     const text = draft.trim();
     if (!text) return;
     onAddItem(text);
     setDraft('');
+  };
+
+  const startEdit = (it) => {
+    setEditingId(it.id);
+    setEditDraft(it.text);
+  };
+
+  const saveEdit = () => {
+    const text = editDraft.trim();
+    if (text) onEditItem(editingId, text);
+    setEditingId(null);
   };
 
   return (
@@ -26,8 +48,36 @@ export default function CustomNoteCard({ card, onRename, onAddItem, onRemove }) 
         {card.items.map((it) => (
           <div key={it.id} className="flex items-start gap-2.5 py-2 border-t border-[var(--line)]">
             <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-1.5" />
-            <div className="text-[13px] text-[var(--text)] min-w-0 flex-1 break-words whitespace-pre-wrap">
-              {it.text}
+            <div className="min-w-0 flex-1">
+              {editingId === it.id ? (
+                <textarea
+                  autoFocus
+                  value={editDraft}
+                  onChange={(e) => setEditDraft(e.target.value)}
+                  onBlur={saveEdit}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      saveEdit();
+                    }
+                    if (e.key === 'Escape') setEditingId(null);
+                  }}
+                  className="w-full box-border border border-[var(--line)] bg-[var(--input-bg)] text-[var(--text)] rounded-[8px] px-2 py-1.5 text-[13px] font-sans outline-none resize-none"
+                  rows={2}
+                />
+              ) : (
+                <div
+                  onClick={() => startEdit(it)}
+                  className="text-[13px] text-[var(--text)] break-words whitespace-pre-wrap cursor-pointer"
+                >
+                  {it.text}
+                </div>
+              )}
+              {it.updatedAt && (
+                <div className="text-[10.5px] text-[var(--muted)] mt-0.5">
+                  {fmtEditedAt(it.updatedAt)}
+                </div>
+              )}
             </div>
           </div>
         ))}

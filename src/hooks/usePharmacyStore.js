@@ -203,7 +203,25 @@ export function usePharmacyStore() {
 
   const addCustomCardItem = (id, text) =>
     setCustomCards((prev) =>
-      prev.map((c) => (c.id === id ? { ...c, items: [{ id: Date.now(), text }, ...c.items] } : c)),
+      prev.map((c) =>
+        c.id === id
+          ? { ...c, items: [{ id: Date.now(), text, updatedAt: Date.now() }, ...c.items] }
+          : c,
+      ),
+    );
+
+  const editCustomCardItem = (cardId, itemId, text) =>
+    setCustomCards((prev) =>
+      prev.map((c) =>
+        c.id === cardId
+          ? {
+              ...c,
+              items: c.items.map((it) =>
+                it.id === itemId ? { ...it, text, updatedAt: Date.now() } : it,
+              ),
+            }
+          : c,
+      ),
     );
 
   const removeCustomCard = (id) => {
@@ -368,6 +386,7 @@ export function usePharmacyStore() {
     addCustomCard,
     renameCustomCard,
     addCustomCardItem,
+    editCustomCardItem,
     removeCustomCard,
 
     crmQuery,
