@@ -44,7 +44,7 @@ export default function Dashboard({ onLogout }) {
         {view === 'crm' && <CrmView store={store} />}
         {view === 'todo' && <TodoView store={store} />}
         {view === 'tefteri' && <TefteriView store={store} />}
-        {view === 'finance' && <FinanceView store={store} />}
+        {view === 'finance' && <FinanceView />}
       </main>
     </div>
   );
