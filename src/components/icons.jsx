@@ -125,6 +125,16 @@ export function TrashIcon(props) {
   );
 }
 
+export function ArchiveIcon(props) {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" {...base} {...props}>
+      <rect x="3" y="4" width="18" height="5" rx="1.5" />
+      <path d="M5 9v9a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V9" />
+      <path d="M10 13h4" />
+    </svg>
+  );
+}
+
 export function SyncIcon(props) {
   return (
     <svg width="13" height="13" viewBox="0 0 24 24" {...base} {...props}>
@@ -157,4 +167,5 @@ export const NAV_ICONS = {
   todo: TodoIcon,
   finance: FinanceIcon,
   tefteri: TefteriIcon,
+  archive: ArchiveIcon,
 };

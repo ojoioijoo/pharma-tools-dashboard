@@ -3,6 +3,7 @@ export default function OverviewCard({ id, dragKey, setDragKey, reorderCards, pa
 
   return (
     <div
+      data-card-id={id}
       draggable
       onDragStart={() => setDragKey(id)}
       onDragOver={(e) => e.preventDefault()}
@@ -12,7 +13,7 @@ export default function OverviewCard({ id, dragKey, setDragKey, reorderCards, pa
         setDragKey(null);
       }}
       onDragEnd={() => setDragKey(null)}
-      className={`min-w-0 mb-5 break-inside-avoid bg-[var(--card-bg)] rounded-[20px] ${padding} shadow-card flex flex-col cursor-grab ${
+      className={`min-w-0 bg-[var(--card-bg)] rounded-[20px] ${padding} shadow-card flex flex-col cursor-grab ${
         dragging ? 'opacity-40' : 'opacity-100'
       }`}
     >

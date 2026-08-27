@@ -17,6 +17,7 @@ const TITLES = {
   todo: 'Εκκρεμότητες',
   finance: 'Οικονομικά Φαρμακείου',
   tefteri: 'Τεφτέρι',
+  archive: 'Αρχείο',
 };
 
 const NAV_LABELS = {
@@ -25,6 +26,7 @@ const NAV_LABELS = {
   todo: 'Εκκρεμότητες',
   finance: 'Οικονομικά',
   tefteri: 'Τεφτέρι',
+  archive: 'Αρχείο',
 };
 
 const MONTH_NAMES = [
@@ -35,6 +37,10 @@ const DAY_LABELS = ['Δε', 'Τρ', 'Τε', 'Πε', 'Πα', 'Σα', 'Κυ'];
 
 const pad = (n) => (n < 10 ? '0' + n : '' + n);
 const fmtDate = (iso) => `${iso.slice(8, 10)}/${iso.slice(5, 7)}`;
+const fmtDateTime = (ts) => {
+  const d = new Date(ts);
+  return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+};
 
 function todayISO() {
   const d = new Date();
@@ -75,7 +81,7 @@ function migrateOverdueTasks(tasks, todos) {
 export function usePharmacyStore() {
   const [view, setView] = useState('overview');
   const [darkMode, setDarkMode] = useState(false);
-  const [navOrder, setNavOrder] = useState(['overview', 'crm', 'todo', 'finance', 'tefteri']);
+  const [navOrder, setNavOrder] = useState(['overview', 'crm', 'todo', 'finance', 'tefteri', 'archive']);
   const [dragKey, setDragKey] = useState(null);
   const [crmQuery, setCrmQuery] = useState('');
   const [calYear, setCalYear] = useState(Number(TODAY.slice(0, 4)));
@@ -86,7 +92,10 @@ export function usePharmacyStore() {
   const [todos, setTodos] = useState(initialTodos);
   const [newTodoText, setNewTodoText] = useState('');
   const [tefteri, setTefteri] = useState(initialTefteri);
+  const [newTefteriCustomer, setNewTefteriCustomer] = useState('');
+  const [newTefteriAmount, setNewTefteriAmount] = useState('');
   const [customers, setCustomers] = useState(initialCustomers);
+  const [archive, setArchive] = useState([]);
   const [overviewOrder, setOverviewOrder] = useState(['tasks', 'calendar', 'todos', 'tefteri']);
   const [overviewDragKey, setOverviewDragKey] = useState(null);
   const [customCards, setCustomCards] = useState([]);
@@ -133,13 +142,17 @@ export function usePharmacyStore() {
       let tf = [];
       let cu = [];
       let cc = [];
+      let oo = [];
+      let ar = [];
       try {
-        [ft, ftd, tf, cu, cc] = await Promise.all([
+        [ft, ftd, tf, cu, cc, oo, ar] = await Promise.all([
           fetchCollection('tasks'),
           fetchCollection('todos'),
           fetchCollection('tefteri'),
           fetchCollection('customers'),
           fetchCollection('cards'),
+          fetchCollection('overviewOrder'),
+          fetchCollection('archive'),
         ]);
         if (cancelled) return;
         setSyncStatus('synced');
@@ -164,10 +177,15 @@ export function usePharmacyStore() {
       if (cu.length) setCustomers(cu);
       else saveCollection('customers', initialCustomers).catch(() => {});
       setCustomCards(cc);
+      setArchive(ar);
+      const cardIds = cc.map((c) => c.id);
+      const baseKeys = ['tasks', 'calendar', 'todos', 'tefteri'];
+      const validKeys = new Set([...baseKeys, ...cardIds]);
       setOverviewOrder((prev) => {
-        const cardIds = cc.map((c) => c.id);
-        const kept = prev.filter((k) => !k.startsWith('custom-'));
-        return [...kept, ...cardIds];
+        const source = oo.length ? oo : prev;
+        const kept = source.filter((k) => validKeys.has(k));
+        const missing = [...baseKeys, ...cardIds].filter((k) => !kept.includes(k));
+        return [...kept, ...missing];
       });
 
       hydrated.current = true;
@@ -182,6 +200,14 @@ export function usePharmacyStore() {
   useEffect(() => persist('tefteri', tefteri), [tefteri]);
   useEffect(() => persist('customers', customers), [customers]);
   useEffect(() => persist('cards', customCards), [customCards]);
+  useEffect(() => persist('overviewOrder', overviewOrder), [overviewOrder]);
+  useEffect(() => persist('archive', archive), [archive]);
+
+  const archiveItem = (type, item) =>
+    setArchive((prev) => [
+      { id: `arc-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, type, item, deletedAt: Date.now() },
+      ...prev,
+    ]);
 
   const toggleDarkMode = () => setDarkMode((v) => !v);
 
@@ -302,7 +328,11 @@ export function usePharmacyStore() {
   const editTask = (id, text) =>
     setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, text } : t)));
 
-  const deleteTask = (id) => setTasks((prev) => prev.filter((t) => t.id !== id));
+  const deleteTask = (id) => {
+    const item = tasks.find((t) => t.id === id);
+    if (item) archiveItem('task', item);
+    setTasks((prev) => prev.filter((t) => t.id !== id));
+  };
 
   const overdueTodos = todos
     .filter((t) => t.dateISO < TODAY)
@@ -316,7 +346,11 @@ export function usePharmacyStore() {
   const editTodo = (id, drug) =>
     setTodos((prev) => prev.map((t) => (t.id === id ? { ...t, drug } : t)));
 
-  const deleteTodo = (id) => setTodos((prev) => prev.filter((t) => t.id !== id));
+  const deleteTodo = (id) => {
+    const item = todos.find((t) => t.id === id);
+    if (item) archiveItem('todo', item);
+    setTodos((prev) => prev.filter((t) => t.id !== id));
+  };
 
   const addTodoQuick = () => {
     const text = newTodoText.trim();
@@ -350,8 +384,58 @@ export function usePharmacyStore() {
   const toggleTefteri = (id) =>
     setTefteri((prev) => prev.map((e) => (e.id === id ? { ...e, paid: !e.paid } : e)));
 
-  const editTefteriEntry = (id, { customer, amount }) =>
-    setTefteri((prev) => prev.map((e) => (e.id === id ? { ...e, customer, amount } : e)));
+  const addTefteriEntry = () => {
+    const customer = newTefteriCustomer.trim();
+    const amount = parseFloat(newTefteriAmount.replace(',', '.'));
+    if (!customer || Number.isNaN(amount)) return;
+    setTefteri((prev) => [
+      { id: Date.now(), customer, amount, dateISO: TODAY, note: '', paid: false },
+      ...prev,
+    ]);
+    setNewTefteriCustomer('');
+    setNewTefteriAmount('');
+  };
+
+  const deleteTefteriEntry = (id) => {
+    const item = tefteri.find((e) => e.id === id);
+    if (item) archiveItem('tefteri', item);
+    setTefteri((prev) => prev.filter((e) => e.id !== id));
+  };
+
+  const editTefteriEntry = (id, { customer, amount, note }) =>
+    setTefteri((prev) =>
+      prev.map((e) =>
+        e.id === id ? { ...e, customer, amount, note: note !== undefined ? note : e.note } : e,
+      ),
+    );
+
+  const ARCHIVE_TYPE_LABELS = { task: 'Δουλειά', todo: 'Εκκρεμότητα', tefteri: 'Τεφτέρι' };
+
+  const archiveEntries = useMemo(
+    () =>
+      archive.map((a) => {
+        let title = '';
+        let subtitle = '';
+        if (a.type === 'task') {
+          title = a.item.text;
+          subtitle = fmtDate(a.item.dateISO);
+        } else if (a.type === 'todo') {
+          title = a.item.drug;
+          subtitle = [a.item.patient, fmtDate(a.item.dateISO)].filter(Boolean).join(' · ');
+        } else if (a.type === 'tefteri') {
+          title = a.item.customer;
+          subtitle = '€' + a.item.amount.toFixed(2).replace('.', ',');
+        }
+        return {
+          id: a.id,
+          typeLabel: ARCHIVE_TYPE_LABELS[a.type] || a.type,
+          title,
+          subtitle,
+          deletedAtLabel: fmtDateTime(a.deletedAt),
+        };
+      }),
+    [archive],
+  );
 
   const filteredCustomers = useMemo(() => {
     const q = crmQuery.toLowerCase();
@@ -415,6 +499,14 @@ export function usePharmacyStore() {
     tefteriTotal,
     toggleTefteri,
     editTefteriEntry,
+    addTefteriEntry,
+    deleteTefteriEntry,
+    newTefteriCustomer,
+    setNewTefteriCustomer,
+    newTefteriAmount,
+    setNewTefteriAmount,
+
+    archiveEntries,
 
     salesWeek,
     financeMonths,

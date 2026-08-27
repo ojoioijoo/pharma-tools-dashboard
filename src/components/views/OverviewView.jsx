@@ -1,8 +1,73 @@
-import { useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import MiniCalendar from '../MiniCalendar.jsx';
 import OverviewCard from '../OverviewCard.jsx';
 import CustomNoteCard from '../CustomNoteCard.jsx';
 import { TrashIcon } from '../icons.jsx';
+
+// Πλέγμα «masonry»: κάθε κάρτα παίρνει grid-row-end ίσο με το πραγματικό της
+// ύψος (σε λεπτές μονάδες του 1px), οπότε οι κάρτες πακετάρονται σφιχτά χωρίς
+// κενά, ενώ η σειρά/στήλη τους παραμένει σταθερή (καθορίζεται από τη θέση
+// στη λίστα, όχι από αναδιανομή ύψους όπως στο CSS columns). Παράλληλα κάνει
+// FLIP animation: μετράει τις παλιές θέσεις πριν το update και «γλιστράει»
+// κάθε κάρτα από την παλιά στη νέα θέση όταν αλλάζει (reorder ή αλλαγή ύψους).
+const MASONRY_ROW_UNIT = 1;
+const MASONRY_GAP = 20;
+
+function useMasonryGrid(order, containerRef) {
+  useLayoutEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const layout = () => {
+      const nodes = container.querySelectorAll('[data-card-id]');
+
+      // FIRST: πραγματική θέση αυτή τη στιγμή στην οθόνη (με ό,τι transform υπάρχει ήδη).
+      const firstRects = new Map();
+      nodes.forEach((node) => firstRects.set(node.getAttribute('data-card-id'), node.getBoundingClientRect()));
+
+      nodes.forEach((node) => {
+        node.style.transition = 'none';
+        node.style.transform = '';
+      });
+
+      // Ξαναϋπολογισμός του ύψους κάθε κάρτας σε grid-rows, ώστε να πακετάρονται σφιχτά.
+      nodes.forEach((node) => {
+        const height = node.getBoundingClientRect().height;
+        const span = Math.ceil((height + MASONRY_GAP) / MASONRY_ROW_UNIT);
+        node.style.gridRowEnd = `span ${span}`;
+      });
+
+      // LAST: πραγματική νέα θέση μετά την ενημέρωση του πλέγματος.
+      const lastRects = new Map();
+      nodes.forEach((node) => lastRects.set(node.getAttribute('data-card-id'), node.getBoundingClientRect()));
+
+      nodes.forEach((node) => {
+        const id = node.getAttribute('data-card-id');
+        const first = firstRects.get(id);
+        const last = lastRects.get(id);
+        if (!first || !last) return;
+        const dx = first.left - last.left;
+        const dy = first.top - last.top;
+        if (!dx && !dy) return;
+        node.style.transform = `translate(${dx}px, ${dy}px)`;
+        requestAnimationFrame(() => {
+          node.style.transition = 'transform 220ms ease';
+          node.style.transform = '';
+        });
+      });
+    };
+
+    layout();
+
+    const ro = new ResizeObserver(() => layout());
+    container.querySelectorAll('[data-card-id]').forEach((node) => ro.observe(node));
+    window.addEventListener('resize', layout);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', layout);
+    };
+  }, [order, containerRef]);
+}
 
 export default function OverviewView({ store, goTo }) {
   const {
@@ -34,6 +99,9 @@ export default function OverviewView({ store, goTo }) {
   } = store;
 
   const cardProps = { dragKey: overviewDragKey, setDragKey: setOverviewDragKey, reorderCards: reorderOverview };
+
+  const gridRef = useRef(null);
+  useMasonryGrid(overviewOrder, gridRef);
 
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editingTaskDraft, setEditingTaskDraft] = useState('');
@@ -218,8 +286,39 @@ export default function OverviewView({ store, goTo }) {
                     </div>
                   </>
                 )}
+                <div
+                  onClick={() => store.deleteTefteriEntry(e.id)}
+                  className="text-[var(--muted)] hover:text-danger cursor-pointer shrink-0"
+                >
+                  <TrashIcon />
+                </div>
               </div>
             ))}
+          </div>
+          <div className="flex flex-col gap-1.5 mt-3">
+            <input
+              type="text"
+              placeholder="Όνομα πελάτη..."
+              value={store.newTefteriCustomer}
+              onChange={(e) => store.setNewTefteriCustomer(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && store.addTefteriEntry()}
+              className="w-full box-border border border-[var(--line)] bg-[var(--input-bg)] text-[var(--text)] rounded-[10px] px-2.5 py-2 text-[12.5px] font-sans outline-none"
+            />
+            <input
+              type="text"
+              inputMode="decimal"
+              placeholder="Ποσό (€)..."
+              value={store.newTefteriAmount}
+              onChange={(e) => store.setNewTefteriAmount(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && store.addTefteriEntry()}
+              className="w-full box-border border border-[var(--line)] bg-[var(--input-bg)] text-[var(--text)] rounded-[10px] px-2.5 py-2 text-[12.5px] font-sans outline-none"
+            />
+            <div
+              onClick={store.addTefteriEntry}
+              className="bg-primary text-white font-bold text-xs px-3 py-[7px] rounded-[10px] cursor-pointer text-center"
+            >
+              Προσθήκη
+            </div>
           </div>
         </OverviewCard>
       );
@@ -318,12 +417,16 @@ export default function OverviewView({ store, goTo }) {
   };
 
   return (
-    <div className="columns-1 sm:columns-2 xl:columns-4 gap-5">
+    <div
+      ref={gridRef}
+      className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-x-5 auto-rows-[1px] items-start"
+    >
       {overviewOrder.map(renderWidget)}
 
       <div
+        data-card-id="add-card"
         onClick={addCustomCard}
-        className="min-w-0 mb-5 min-h-[120px] break-inside-avoid rounded-[20px] border-2 border-dashed border-[var(--line)] flex items-center justify-start px-5 cursor-pointer text-[var(--muted)] hover:text-primary hover:border-primary transition-colors"
+        className="min-w-0 min-h-[120px] rounded-[20px] border-2 border-dashed border-[var(--line)] flex items-center justify-start px-5 cursor-pointer text-[var(--muted)] hover:text-primary hover:border-primary transition-colors"
       >
         <span className="text-2xl font-bold leading-none">+</span>
       </div>

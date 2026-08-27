@@ -6,6 +6,7 @@ import CrmView from './components/views/CrmView.jsx';
 import TodoView from './components/views/TodoView.jsx';
 import TefteriView from './components/views/TefteriView.jsx';
 import FinanceView from './components/views/FinanceView.jsx';
+import ArchiveView from './components/views/ArchiveView.jsx';
 import { usePharmacyStore } from './hooks/usePharmacyStore.js';
 
 export default function Dashboard({ onLogout }) {
@@ -45,6 +46,7 @@ export default function Dashboard({ onLogout }) {
         {view === 'todo' && <TodoView store={store} />}
         {view === 'tefteri' && <TefteriView store={store} />}
         {view === 'finance' && <FinanceView />}
+        {view === 'archive' && <ArchiveView store={store} />}
       </main>
     </div>
   );
