@@ -5,7 +5,7 @@ import CustomNoteCard from '../CustomNoteCard.jsx';
 import { TrashIcon } from '../icons.jsx';
 import { useDragReorder } from '../../hooks/useDragReorder.js';
 
-const LIST_SCROLL_CLASS = 'max-h-[280px] overflow-y-auto pr-1';
+const LIST_SCROLL_CLASS = 'max-h-[65vh] overflow-y-auto pr-1';
 
 // Πλέγμα «masonry»: κάθε κάρτα παίρνει grid-row-end ίσο με το πραγματικό της
 // ύψος (σε λεπτές μονάδες του 1px), οπότε οι κάρτες πακετάρονται σφιχτά χωρίς
@@ -146,7 +146,8 @@ export default function OverviewView({ store, goTo }) {
       return (
         <OverviewCard key={id} id={id} {...cardProps}>
           <div className="font-heading font-bold text-[15px] mb-3 text-[var(--text)]">
-            Σήμερα · {selectedLabel}
+            Σήμερα · {selectedLabel}{' '}
+            <span className="font-normal text-[var(--muted)]">({tasksForSelected.length})</span>
           </div>
           <div className={`mb-3 min-h-[40px] ${LIST_SCROLL_CLASS}`}>
             {tasksForSelected.map((tk) => (
@@ -236,7 +237,9 @@ export default function OverviewView({ store, goTo }) {
         <OverviewCard key={id} id={id} {...cardProps}>
           <div className="flex items-start justify-between mb-3.5">
             <div>
-              <div className="font-heading font-bold text-sm mb-1 text-[var(--text)]">Τεφτέρι</div>
+              <div className="font-heading font-bold text-sm mb-1 text-[var(--text)]">
+                Τεφτέρι <span className="font-normal text-[var(--muted)]">({store.tefteriEntries.length})</span>
+              </div>
               <a href="#" onClick={(e) => { e.preventDefault(); goTo('tefteri'); }} className="text-[11.5px] font-semibold">
                 Όλες →
               </a>
@@ -289,7 +292,7 @@ export default function OverviewView({ store, goTo }) {
                       draggable={false}
                       className={`flex-1 min-w-0 cursor-pointer ${e.paid ? 'line-through text-[var(--muted)]' : ''}`}
                     >
-                      <div className="text-[13px] font-semibold text-[var(--text)] truncate">{e.customer}</div>
+                      <div className="text-[13px] font-semibold text-[var(--text)] break-words">{e.customer}</div>
                       <div className="text-[11px] text-[var(--muted)]">{e.date}</div>
                     </div>
                     <div
@@ -343,7 +346,9 @@ export default function OverviewView({ store, goTo }) {
       return (
         <OverviewCard key={id} id={id} {...cardProps}>
           <div className="mb-3.5">
-            <div className="font-heading font-bold text-sm mb-1 text-[var(--text)]">Εκκρεμότητες</div>
+            <div className="font-heading font-bold text-sm mb-1 text-[var(--text)]">
+              Εκκρεμότητες <span className="font-normal text-[var(--muted)]">({store.todoPreview.length})</span>
+            </div>
             <a href="#" onClick={(e) => { e.preventDefault(); goTo('todo'); }} className="text-[11.5px] font-semibold">
               Όλες →
             </a>
