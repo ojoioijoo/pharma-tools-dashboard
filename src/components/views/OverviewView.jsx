@@ -3,6 +3,9 @@ import MiniCalendar from '../MiniCalendar.jsx';
 import OverviewCard from '../OverviewCard.jsx';
 import CustomNoteCard from '../CustomNoteCard.jsx';
 import { TrashIcon } from '../icons.jsx';
+import { useDragReorder } from '../../hooks/useDragReorder.js';
+
+const LIST_SCROLL_CLASS = 'max-h-[280px] overflow-y-auto pr-1';
 
 // Πλέγμα «masonry»: κάθε κάρτα παίρνει grid-row-end ίσο με το πραγματικό της
 // ύψος (σε λεπτές μονάδες του 1px), οπότε οι κάρτες πακετάρονται σφιχτά χωρίς
@@ -103,6 +106,10 @@ export default function OverviewView({ store, goTo }) {
   const gridRef = useRef(null);
   useMasonryGrid(overviewOrder, gridRef);
 
+  const taskDrag = useDragReorder(store.reorderTasks);
+  const todoDrag = useDragReorder(store.reorderTodos);
+  const tefteriDrag = useDragReorder(store.reorderTefteri);
+
   const [editingTaskId, setEditingTaskId] = useState(null);
   const [editingTaskDraft, setEditingTaskDraft] = useState('');
   const saveTaskEdit = (id) => {
@@ -141,9 +148,13 @@ export default function OverviewView({ store, goTo }) {
           <div className="font-heading font-bold text-[15px] mb-3 text-[var(--text)]">
             Σήμερα · {selectedLabel}
           </div>
-          <div className="mb-3 min-h-[40px]">
+          <div className={`mb-3 min-h-[40px] ${LIST_SCROLL_CLASS}`}>
             {tasksForSelected.map((tk) => (
-              <div key={tk.id} className="flex items-start gap-2.5 py-2 border-t border-[var(--line)]">
+              <div
+                key={tk.id}
+                {...taskDrag.dragHandlers(tk.id)}
+                className={`flex items-start gap-2.5 py-2 px-1 border-t border-[var(--line)] ${taskDrag.rowClass(tk.id)}`}
+              >
                 <div
                   onClick={() => toggleTask(tk.id)}
                   className={`w-[16px] h-[16px] rounded-[5px] border-2 border-primary shrink-0 mt-0.5 cursor-pointer ${
@@ -232,9 +243,13 @@ export default function OverviewView({ store, goTo }) {
             </div>
             <div className="font-heading font-bold text-sm text-[var(--text)]">{store.tefteriTotal}</div>
           </div>
-          <div>
+          <div className={LIST_SCROLL_CLASS}>
             {store.tefteriEntries.map((e) => (
-              <div key={e.id} className="flex items-center gap-2.5 py-[9px] border-t border-[var(--line)]">
+              <div
+                key={e.id}
+                {...tefteriDrag.dragHandlers(e.id)}
+                className={`flex items-center gap-2.5 py-[9px] px-1 border-t border-[var(--line)] ${tefteriDrag.rowClass(e.id)}`}
+              >
                 <div
                   onClick={() => store.toggleTefteri(e.id)}
                   className={`w-[18px] h-[18px] rounded-md shrink-0 cursor-pointer border-2 border-primary ${
@@ -333,9 +348,13 @@ export default function OverviewView({ store, goTo }) {
               Όλες →
             </a>
           </div>
-          <div className="mb-3">
+          <div className={`mb-3 ${LIST_SCROLL_CLASS}`}>
             {store.todoPreview.map((t) => (
-              <div key={t.id} className="flex items-center gap-2.5 py-[9px] border-t border-[var(--line)]">
+              <div
+                key={t.id}
+                {...todoDrag.dragHandlers(t.id)}
+                className={`flex items-center gap-2.5 py-[9px] px-1 border-t border-[var(--line)] ${todoDrag.rowClass(t.id)}`}
+              >
                 <div
                   onClick={() => store.toggleTodo(t.id)}
                   className={`w-[18px] h-[18px] rounded-md border-2 border-primary shrink-0 cursor-pointer ${

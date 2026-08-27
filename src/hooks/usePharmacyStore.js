@@ -58,6 +58,18 @@ function moveItem(order, fromKey, toKey) {
   return next;
 }
 
+// Ίδιο με το moveItem, αλλά για πίνακες αντικειμένων με .id (tasks/todos/tefteri).
+function moveById(list, fromId, toId) {
+  if (!fromId || fromId === toId) return list;
+  const fromIdx = list.findIndex((x) => x.id === fromId);
+  const toIdx = list.findIndex((x) => x.id === toId);
+  if (fromIdx === -1 || toIdx === -1) return list;
+  const next = [...list];
+  const [moved] = next.splice(fromIdx, 1);
+  next.splice(next.findIndex((x) => x.id === toId), 0, moved);
+  return next;
+}
+
 // Σημειώσεις ημερολογίου σε περασμένη ημερομηνία που δεν έχουν τικαριστεί
 // μεταφέρονται αυτόματα στις εκκρεμότητες.
 function migrateOverdueTasks(tasks, todos) {
@@ -334,9 +346,10 @@ export function usePharmacyStore() {
     setTasks((prev) => prev.filter((t) => t.id !== id));
   };
 
+  const reorderTasks = (fromId, toId) => setTasks((prev) => moveById(prev, fromId, toId));
+
   const overdueTodos = todos
     .filter((t) => t.dateISO < TODAY)
-    .sort((a, b) => a.dateISO.localeCompare(b.dateISO))
     .map((t) => ({ ...t, date: fmtDate(t.dateISO), done: t.status === 'done' }));
   const todoPreview = todos.map((t) => ({ ...t, date: fmtDate(t.dateISO), done: t.status === 'done' }));
 
@@ -351,6 +364,8 @@ export function usePharmacyStore() {
     if (item) archiveItem('todo', item);
     setTodos((prev) => prev.filter((t) => t.id !== id));
   };
+
+  const reorderTodos = (fromId, toId) => setTodos((prev) => moveById(prev, fromId, toId));
 
   const addTodoQuick = () => {
     const text = newTodoText.trim();
@@ -401,6 +416,8 @@ export function usePharmacyStore() {
     if (item) archiveItem('tefteri', item);
     setTefteri((prev) => prev.filter((e) => e.id !== id));
   };
+
+  const reorderTefteri = (fromId, toId) => setTefteri((prev) => moveById(prev, fromId, toId));
 
   const editTefteriEntry = (id, { customer, amount, note }) =>
     setTefteri((prev) =>
@@ -469,6 +486,7 @@ export function usePharmacyStore() {
     toggleTask,
     editTask,
     deleteTask,
+    reorderTasks,
 
     todoPreview,
     newTodoText,
@@ -494,6 +512,7 @@ export function usePharmacyStore() {
     toggleTodo,
     editTodo,
     deleteTodo,
+    reorderTodos,
 
     tefteriEntries,
     tefteriTotal,
@@ -501,6 +520,7 @@ export function usePharmacyStore() {
     editTefteriEntry,
     addTefteriEntry,
     deleteTefteriEntry,
+    reorderTefteri,
     newTefteriCustomer,
     setNewTefteriCustomer,
     newTefteriAmount,

@@ -1,12 +1,18 @@
 import { TrashIcon } from '../icons.jsx';
+import { useDragReorder } from '../../hooks/useDragReorder.js';
 
 export default function TodoView({ store }) {
-  const { overdueTodos, toggleTodo, deleteTodo } = store;
+  const { overdueTodos, toggleTodo, deleteTodo, reorderTodos } = store;
+  const { dragHandlers, rowClass } = useDragReorder(reorderTodos);
 
   return (
     <div className="bg-[var(--card-bg)] rounded-[20px] shadow-card overflow-hidden">
       {overdueTodos.map((t) => (
-        <div key={t.id} className="flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 border-b border-[var(--line)]">
+        <div
+          key={t.id}
+          {...dragHandlers(t.id)}
+          className={`flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 border-b border-[var(--line)] ${rowClass(t.id)}`}
+        >
           <div
             onClick={() => toggleTodo(t.id)}
             className={`w-[22px] h-[22px] rounded-[7px] shrink-0 cursor-pointer border-2 border-primary ${

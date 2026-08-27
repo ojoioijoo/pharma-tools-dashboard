@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { TrashIcon } from '../icons.jsx';
+import { useDragReorder } from '../../hooks/useDragReorder.js';
 
 export default function TefteriView({ store }) {
   const {
@@ -9,11 +10,14 @@ export default function TefteriView({ store }) {
     editTefteriEntry,
     addTefteriEntry,
     deleteTefteriEntry,
+    reorderTefteri,
     newTefteriCustomer,
     setNewTefteriCustomer,
     newTefteriAmount,
     setNewTefteriAmount,
   } = store;
+
+  const { dragHandlers, rowClass } = useDragReorder(reorderTefteri);
 
   const [editingId, setEditingId] = useState(null);
   const [draftCustomer, setDraftCustomer] = useState('');
@@ -72,7 +76,11 @@ export default function TefteriView({ store }) {
           </div>
         </div>
         {tefteriEntries.map((e) => (
-          <div key={e.id} className="flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 border-b border-[var(--line)]">
+          <div
+            key={e.id}
+            {...dragHandlers(e.id)}
+            className={`flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 border-b border-[var(--line)] ${rowClass(e.id)}`}
+          >
             <div
               onClick={() => toggleTefteri(e.id)}
               className={`w-[22px] h-[22px] rounded-[7px] shrink-0 cursor-pointer border-2 border-primary ${
