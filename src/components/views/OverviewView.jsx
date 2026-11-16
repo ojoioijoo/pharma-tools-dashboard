@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState } from 'react';
 import MiniCalendar from '../MiniCalendar.jsx';
 import OverviewCard from '../OverviewCard.jsx';
 import CustomNoteCard from '../CustomNoteCard.jsx';
+import TaskColorPicker from '../TaskColorPicker.jsx';
 import { TrashIcon } from '../icons.jsx';
 import { useDragReorder } from '../../hooks/useDragReorder.js';
 
@@ -154,6 +155,7 @@ export default function OverviewView({ store, goTo }) {
               <div
                 key={tk.id}
                 {...taskDrag.dragHandlers(tk.id)}
+                data-task-color={tk.color}
                 className={`flex items-start gap-2.5 py-2 px-1 border-t border-[var(--line)] ${taskDrag.rowClass(tk.id)}`}
               >
                 <div
@@ -188,6 +190,7 @@ export default function OverviewView({ store, goTo }) {
                     </div>
                   )}
                 </div>
+                <TaskColorPicker value={tk.color} onChange={(color) => store.setTaskColor(tk.id, color)} />
                 <div
                   onClick={() => deleteTask(tk.id)}
                   className="text-[var(--muted)] hover:text-danger cursor-pointer shrink-0 mt-0.5"
@@ -358,6 +361,7 @@ export default function OverviewView({ store, goTo }) {
               <div
                 key={t.id}
                 {...todoDrag.dragHandlers(t.id)}
+                data-task-color={t.color}
                 className={`flex items-center gap-2.5 py-[9px] px-1 border-t border-[var(--line)] ${todoDrag.rowClass(t.id)}`}
               >
                 <div
@@ -396,6 +400,7 @@ export default function OverviewView({ store, goTo }) {
                     {t.date}
                   </div>
                 </div>
+                <TaskColorPicker value={t.color} onChange={(color) => store.setTodoColor(t.id, color)} />
                 <div
                   onClick={() => store.deleteTodo(t.id)}
                   className="text-[var(--muted)] hover:text-danger cursor-pointer shrink-0"

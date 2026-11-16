@@ -1,4 +1,5 @@
 import { TrashIcon } from '../icons.jsx';
+import TaskColorPicker from '../TaskColorPicker.jsx';
 import { useDragReorder } from '../../hooks/useDragReorder.js';
 
 export default function TodoView({ store }) {
@@ -11,6 +12,7 @@ export default function TodoView({ store }) {
         <div
           key={t.id}
           {...dragHandlers(t.id)}
+          data-task-color={t.color}
           className={`flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 border-b border-[var(--line)] ${rowClass(t.id)}`}
         >
           <div
@@ -30,6 +32,7 @@ export default function TodoView({ store }) {
           <div className="shrink-0 text-xs font-bold px-[13px] py-1.5 rounded-full bg-[var(--input-bg)] text-[var(--text)]">
             {t.date}
           </div>
+          <TaskColorPicker value={t.color} onChange={(color) => store.setTodoColor(t.id, color)} />
           <div
             onClick={() => deleteTodo(t.id)}
             className="text-[var(--muted)] hover:text-danger cursor-pointer shrink-0"

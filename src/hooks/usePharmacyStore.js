@@ -10,6 +10,7 @@ import {
   transactions,
 } from '../data/mockData.js';
 import { fetchCollection, saveCollection } from '../api.js';
+import { TASK_COLORS } from '../components/TaskColorPicker.jsx';
 
 const TITLES = {
   overview: 'Επισκόπηση',
@@ -83,6 +84,7 @@ function migrateOverdueTasks(tasks, todos) {
     qty: '',
     dateISO: t.dateISO,
     status: 'pending',
+    color: t.color || 'default',
   }));
   return {
     tasks: tasks.filter((t) => !overdueIds.has(t.id)),
@@ -340,6 +342,16 @@ export function usePharmacyStore() {
   const editTask = (id, text) =>
     setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, text } : t)));
 
+  const setTaskColor = (id, color) => {
+    if (!TASK_COLORS.includes(color)) return;
+    setTasks((prev) => prev.map((t) => t.id === id ? { ...t, color } : t));
+  };
+
+  const setTodoColor = (id, color) => {
+    if (!TASK_COLORS.includes(color)) return;
+    setTodos((prev) => prev.map((t) => t.id === id ? { ...t, color } : t));
+  };
+
   const deleteTask = (id) => {
     const item = tasks.find((t) => t.id === id);
     if (item) archiveItem('task', item);
@@ -485,6 +497,8 @@ export function usePharmacyStore() {
     addTask,
     toggleTask,
     editTask,
+    setTaskColor,
+    setTodoColor,
     deleteTask,
     reorderTasks,
 

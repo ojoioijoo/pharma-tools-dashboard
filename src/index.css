@@ -28,6 +28,24 @@ body {
   margin: 0;
 }
 
+[data-task-color="red"] { --task-bg: #fee2e2; }
+[data-task-color="yellow"] { --task-bg: #fef3c7; }
+[data-task-color="green"] { --task-bg: #dcfce7; }
+[data-task-color="blue"] { --task-bg: #dbeafe; }
+.dark [data-task-color="red"] { --task-bg: #592d3b; }
+.dark [data-task-color="yellow"] { --task-bg: #514528; }
+.dark [data-task-color="green"] { --task-bg: #254b3e; }
+.dark [data-task-color="blue"] { --task-bg: #283e64; }
+[data-task-color="red"],
+[data-task-color="yellow"],
+[data-task-color="green"],
+[data-task-color="blue"] {
+  background-color: var(--task-bg);
+  border-radius: 8px;
+  --muted: #51566b;
+}
+.dark [data-task-color] { --muted: #b9bed3; }
+
 a {
   color: #5b6ef5;
   text-decoration: none;
