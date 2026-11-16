@@ -22,6 +22,8 @@ export async function verifyToken(token) {
 
 export async function fetchCollection(name) {
   const res = await fetch(`/api/${name}`, {
+    cache: 'no-store',
+    signal: AbortSignal.timeout(15000),
     headers: { Authorization: `Bearer ${getToken()}` },
   });
   if (!res.ok) throw new Error(`GET /api/${name} failed: ${res.status}`);
@@ -29,14 +31,15 @@ export async function fetchCollection(name) {
   return data.items || [];
 }
 
-export async function saveCollection(name, items) {
+export async function saveCollection(name, items, baseItems) {
   const res = await fetch(`/api/${name}`, {
     method: 'POST',
+    signal: AbortSignal.timeout(15000),
     headers: {
       'Content-Type': 'application/json',
       Authorization: `Bearer ${getToken()}`,
     },
-    body: JSON.stringify({ items }),
+    body: JSON.stringify({ items, baseItems }),
   });
   if (!res.ok) throw new Error(`POST /api/${name} failed: ${res.status}`);
   return res.json();

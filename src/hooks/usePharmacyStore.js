@@ -1,15 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  initialTasks,
-  initialTodos,
-  initialTefteri,
-  initialCustomers,
   salesWeek,
   financeMonths,
   financeSummary,
   transactions,
 } from '../data/mockData.js';
-import { fetchCollection, saveCollection } from '../api.js';
+import { useSyncedCollection } from './useSyncedCollection.js';
 import { TASK_COLORS } from '../components/TaskColorPicker.jsx';
 
 const TITLES = {
@@ -78,7 +74,7 @@ function migrateOverdueTasks(tasks, todos) {
   if (!overdue.length) return { tasks, todos };
   const overdueIds = new Set(overdue.map((t) => t.id));
   const migrated = overdue.map((t) => ({
-    id: `mig-${t.id}-${Date.now()}`,
+    id: `mig-${t.id}`,
     drug: t.text,
     patient: '',
     qty: '',
@@ -88,7 +84,7 @@ function migrateOverdueTasks(tasks, todos) {
   }));
   return {
     tasks: tasks.filter((t) => !overdueIds.has(t.id)),
-    todos: [...migrated, ...todos],
+    todos: [...migrated.filter((item) => !todos.some((todo) => todo.id === item.id)), ...todos],
   };
 }
 
@@ -102,120 +98,47 @@ export function usePharmacyStore() {
   const [calMonth, setCalMonth] = useState(Number(TODAY.slice(5, 7)) - 1);
   const [selectedDate, setSelectedDate] = useState(TODAY);
   const [newTaskText, setNewTaskText] = useState('');
-  const [tasks, setTasks] = useState(initialTasks);
-  const [todos, setTodos] = useState(initialTodos);
+  const [tasks, setTasks, tasksStatus, tasksReady] = useSyncedCollection('tasks');
+  const [todos, setTodos, todosStatus, todosReady] = useSyncedCollection('todos');
   const [newTodoText, setNewTodoText] = useState('');
-  const [tefteri, setTefteri] = useState(initialTefteri);
+  const [tefteri, setTefteri, tefteriStatus] = useSyncedCollection('tefteri');
   const [newTefteriCustomer, setNewTefteriCustomer] = useState('');
   const [newTefteriAmount, setNewTefteriAmount] = useState('');
-  const [customers, setCustomers] = useState(initialCustomers);
-  const [archive, setArchive] = useState([]);
-  const [overviewOrder, setOverviewOrder] = useState(['tasks', 'calendar', 'todos', 'tefteri']);
+  const [customers, setCustomers, customersStatus] = useSyncedCollection('customers');
+  const [archive, setArchive, archiveStatus] = useSyncedCollection('archive');
+  const [overviewOrder, setOverviewOrder, orderStatus] = useSyncedCollection('overviewOrder', ['tasks', 'calendar', 'todos', 'tefteri']);
   const [overviewDragKey, setOverviewDragKey] = useState(null);
-  const [customCards, setCustomCards] = useState([]);
+  const [customCards, setCustomCards, customCardsStatus, customCardsReady] = useSyncedCollection('cards');
 
-  const [syncStatus, setSyncStatus] = useState('idle'); // idle | syncing | synced | error
-  const hydrated = useRef(false);
-  const pendingSaves = useRef(0);
+  const statuses = [tasksStatus, todosStatus, tefteriStatus, customersStatus, archiveStatus, customCardsStatus, orderStatus];
+  const syncStatus = statuses.includes('error') ? 'error' : statuses.includes('syncing') ? 'syncing' : 'synced';
+  const migrated = useRef(false);
 
-  const persist = (name, value) => {
-    if (!hydrated.current) return;
-    pendingSaves.current += 1;
-    setSyncStatus('syncing');
-    saveCollection(name, value)
-      .then(() => {
-        pendingSaves.current = Math.max(0, pendingSaves.current - 1);
-        if (pendingSaves.current === 0) setSyncStatus('synced');
-      })
-      .catch(() => {
-        pendingSaves.current = Math.max(0, pendingSaves.current - 1);
-        setSyncStatus('error');
-      });
-  };
-
-  // Προειδοποίηση αν ο χρήστης κλείσει/κάνει refresh ενώ εκκρεμεί αποθήκευση,
-  // ώστε να μη χάνεται ό,τι μόλις γράφτηκε.
   useEffect(() => {
-    const handler = (e) => {
-      if (syncStatus === 'syncing') {
-        e.preventDefault();
-        e.returnValue = '';
+    if (!tasksReady || !todosReady || migrated.current) return;
+    migrated.current = true;
+    const next = migrateOverdueTasks(tasks, todos);
+    setTasks(next.tasks);
+    setTodos(next.todos);
+  }, [tasksReady, todosReady, tasks, todos, setTasks, setTodos]);
+
+  useEffect(() => {
+    if (!customCardsReady) return;
+    const base = ['tasks', 'calendar', 'todos', 'tefteri'];
+    const valid = new Set([...base, ...customCards.map((c) => c.id)]);
+    setOverviewOrder((prev) => [...prev.filter((id) => valid.has(id)), ...[...valid].filter((id) => !prev.includes(id))]);
+  }, [customCards, customCardsReady, setOverviewOrder]);
+
+  useEffect(() => {
+    const handler = (event) => {
+      if (syncStatus !== 'synced') {
+        event.preventDefault();
+        event.returnValue = '';
       }
     };
     window.addEventListener('beforeunload', handler);
     return () => window.removeEventListener('beforeunload', handler);
   }, [syncStatus]);
-
-  // Αρχικό φόρτωμα από το Redis (μέσω /api). Αν αποτύχει (π.χ. τοπικό `vite dev`
-  // χωρίς `vercel dev`), κρατάμε τα mock δεδομένα ως έχουν.
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      let ft = [];
-      let ftd = [];
-      let tf = [];
-      let cu = [];
-      let cc = [];
-      let oo = [];
-      let ar = [];
-      try {
-        [ft, ftd, tf, cu, cc, oo, ar] = await Promise.all([
-          fetchCollection('tasks'),
-          fetchCollection('todos'),
-          fetchCollection('tefteri'),
-          fetchCollection('customers'),
-          fetchCollection('cards'),
-          fetchCollection('overviewOrder'),
-          fetchCollection('archive'),
-        ]);
-        if (cancelled) return;
-        setSyncStatus('synced');
-      } catch {
-        // API μη διαθέσιμο — παραμένουμε στα τοπικά mock δεδομένα.
-        if (cancelled) return;
-        setSyncStatus('error');
-      }
-      if (cancelled) return;
-
-      const { tasks: t, todos: td } = migrateOverdueTasks(
-        ft.length ? ft : initialTasks,
-        ftd.length ? ftd : initialTodos,
-      );
-      setTasks(t);
-      setTodos(td);
-      if (!ft.length) saveCollection('tasks', t).catch(() => {});
-      if (!ftd.length) saveCollection('todos', td).catch(() => {});
-
-      if (tf.length) setTefteri(tf);
-      else saveCollection('tefteri', initialTefteri).catch(() => {});
-      if (cu.length) setCustomers(cu);
-      else saveCollection('customers', initialCustomers).catch(() => {});
-      setCustomCards(cc);
-      setArchive(ar);
-      const cardIds = cc.map((c) => c.id);
-      const baseKeys = ['tasks', 'calendar', 'todos', 'tefteri'];
-      const validKeys = new Set([...baseKeys, ...cardIds]);
-      setOverviewOrder((prev) => {
-        const source = oo.length ? oo : prev;
-        const kept = source.filter((k) => validKeys.has(k));
-        const missing = [...baseKeys, ...cardIds].filter((k) => !kept.includes(k));
-        return [...kept, ...missing];
-      });
-
-      hydrated.current = true;
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  useEffect(() => persist('tasks', tasks), [tasks]);
-  useEffect(() => persist('todos', todos), [todos]);
-  useEffect(() => persist('tefteri', tefteri), [tefteri]);
-  useEffect(() => persist('customers', customers), [customers]);
-  useEffect(() => persist('cards', customCards), [customCards]);
-  useEffect(() => persist('overviewOrder', overviewOrder), [overviewOrder]);
-  useEffect(() => persist('archive', archive), [archive]);
 
   const archiveItem = (type, item) =>
     setArchive((prev) => [
@@ -233,7 +156,7 @@ export function usePharmacyStore() {
     setOverviewOrder((order) => moveItem(order, fromKey, toKey));
 
   const addCustomCard = () => {
-    const id = `custom-${Date.now()}`;
+    const id = `custom-${crypto.randomUUID()}`;
     setCustomCards((prev) => [...prev, { id, title: 'Νέα κάρτα', items: [] }]);
     setOverviewOrder((prev) => [...prev, id]);
   };
@@ -247,7 +170,7 @@ export function usePharmacyStore() {
         c.id === id
           ? {
               ...c,
-              items: [{ id: Date.now(), text, createdAt: Date.now(), updatedAt: Date.now() }, ...c.items],
+              items: [{ id: crypto.randomUUID(), text, createdAt: Date.now(), updatedAt: Date.now() }, ...c.items],
             }
           : c,
       ),
@@ -332,7 +255,7 @@ export function usePharmacyStore() {
   const addTask = () => {
     const text = newTaskText.trim();
     if (!text) return;
-    setTasks((prev) => [...prev, { id: Date.now(), dateISO: selectedDate, text, done: false }]);
+    setTasks((prev) => [...prev, { id: crypto.randomUUID(), dateISO: selectedDate, text, done: false }]);
     setNewTaskText('');
   };
 
@@ -383,7 +306,7 @@ export function usePharmacyStore() {
     const text = newTodoText.trim();
     if (!text) return;
     setTodos((prev) => [
-      { id: Date.now(), drug: text, patient: '', qty: '', dateISO: TODAY, status: 'pending' },
+      { id: crypto.randomUUID(), drug: text, patient: '', qty: '', dateISO: TODAY, status: 'pending' },
       ...prev,
     ]);
     setNewTodoText('');
@@ -416,7 +339,7 @@ export function usePharmacyStore() {
     const amount = parseFloat(newTefteriAmount.replace(',', '.'));
     if (!customer || Number.isNaN(amount)) return;
     setTefteri((prev) => [
-      { id: Date.now(), customer, amount, dateISO: TODAY, note: '', paid: false },
+      { id: crypto.randomUUID(), customer, amount, dateISO: TODAY, note: '', paid: false },
       ...prev,
     ]);
     setNewTefteriCustomer('');

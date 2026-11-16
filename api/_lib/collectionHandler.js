@@ -1,4 +1,5 @@
-import { redisGetJSON, redisSetJSON } from './redis.js';
+import { redisGetJSON, redisReadRaw, redisCompareAndSet } from './redis.js';
+import { mergeCollection } from '../../shared/mergeCollection.js';
 import { isValidToken } from './auth.js';
 
 export function createCollectionHandler(key) {
@@ -13,15 +14,25 @@ export function createCollectionHandler(key) {
 
     try {
       if (req.method === 'GET') {
+        res.setHeader('Cache-Control', 'no-store');
         const items = await redisGetJSON(key, []);
         return res.status(200).json({ items });
       }
 
       if (req.method === 'POST') {
-        const { items } = req.body || {};
+        const { items, baseItems } = req.body || {};
         if (!Array.isArray(items)) return res.status(400).json({ error: 'items must be an array' });
-        await redisSetJSON(key, items);
-        return res.status(200).json({ success: true });
+        // Older open tabs must reload instead of replacing data from other devices.
+        if (!Array.isArray(baseItems)) return res.status(409).json({ error: 'Reload required for safe synchronization' });
+        for (let attempt = 0; attempt < 10; attempt++) {
+          const raw = await redisReadRaw(key);
+          const current = raw ? JSON.parse(raw) : [];
+          const merged = mergeCollection(baseItems, items, current);
+          if (await redisCompareAndSet(key, raw, merged)) {
+            return res.status(200).json({ success: true, items: merged });
+          }
+        }
+        return res.status(409).json({ error: 'Concurrent update, retry required' });
       }
 
       return res.status(405).end();
