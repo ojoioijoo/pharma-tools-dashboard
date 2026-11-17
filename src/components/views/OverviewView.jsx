@@ -107,8 +107,8 @@ export default function OverviewView({ store, goTo }) {
   const gridRef = useRef(null);
   useMasonryGrid(overviewOrder, gridRef);
 
-  const taskDrag = useDragReorder(store.reorderTasks);
-  const todoDrag = useDragReorder(store.reorderTodos);
+
+
   const tefteriDrag = useDragReorder(store.reorderTefteri);
 
   const [editingTaskId, setEditingTaskId] = useState(null);
@@ -145,7 +145,7 @@ export default function OverviewView({ store, goTo }) {
   const renderWidget = (id) => {
     if (id === 'tasks') {
       return (
-        <OverviewCard key={id} id={id} {...cardProps}>
+        <OverviewCard key={id} id={id} {...cardProps} itemDrop={store.itemDrop(id)} dropClass={store.itemDragClass(id)}>
           <div className="font-heading font-bold text-[15px] mb-3 text-[var(--text)]">
             Σήμερα · {selectedLabel}{' '}
             <span className="font-normal text-[var(--muted)]">({tasksForSelected.length})</span>
@@ -154,9 +154,10 @@ export default function OverviewView({ store, goTo }) {
             {tasksForSelected.map((tk) => (
               <div
                 key={tk.id}
-                {...taskDrag.dragHandlers(tk.id)}
+                {...store.itemDrag('tasks', tk.id)}
+                {...store.itemDrop('tasks', tk.id)}
                 data-task-color={tk.color}
-                className={`flex items-start gap-2.5 py-2 px-1 border-t border-[var(--line)] ${taskDrag.rowClass(tk.id)}`}
+                className={`flex items-start gap-2.5 py-2 px-1 border-t border-[var(--line)] ${store.itemDragClass('tasks', tk.id)}`}
               >
                 <div
                   onClick={() => toggleTask(tk.id)}
@@ -230,6 +231,8 @@ export default function OverviewView({ store, goTo }) {
             prevMonth={prevMonth}
             nextMonth={nextMonth}
             onSelect={store.selectDate}
+            itemDrop={store.itemDrop}
+            itemDragClass={store.itemDragClass}
           />
         </OverviewCard>
       );
@@ -237,7 +240,7 @@ export default function OverviewView({ store, goTo }) {
 
     if (id === 'tefteri') {
       return (
-        <OverviewCard key={id} id={id} {...cardProps}>
+        <OverviewCard key={id} id={id} {...cardProps} itemDrop={store.itemDrop(id)} dropClass={store.itemDragClass(id)}>
           <div className="flex items-start justify-between mb-3.5">
             <div>
               <div className="font-heading font-bold text-sm mb-1 text-[var(--text)]">
@@ -347,7 +350,7 @@ export default function OverviewView({ store, goTo }) {
 
     if (id === 'todos') {
       return (
-        <OverviewCard key={id} id={id} {...cardProps}>
+        <OverviewCard key={id} id={id} {...cardProps} itemDrop={store.itemDrop(id)} dropClass={store.itemDragClass(id)}>
           <div className="mb-3.5">
             <div className="font-heading font-bold text-sm mb-1 text-[var(--text)]">
               Εκκρεμότητες <span className="font-normal text-[var(--muted)]">({store.todoPreview.length})</span>
@@ -360,9 +363,10 @@ export default function OverviewView({ store, goTo }) {
             {store.todoPreview.map((t) => (
               <div
                 key={t.id}
-                {...todoDrag.dragHandlers(t.id)}
+                {...store.itemDrag('todos', t.id)}
+                {...store.itemDrop('todos', t.id)}
                 data-task-color={t.color}
-                className={`flex items-center gap-2.5 py-[9px] px-1 border-t border-[var(--line)] ${todoDrag.rowClass(t.id)}`}
+                className={`flex items-center gap-2.5 py-[9px] px-1 border-t border-[var(--line)] ${store.itemDragClass('todos', t.id)}`}
               >
                 <div
                   onClick={() => store.toggleTodo(t.id)}
@@ -433,9 +437,10 @@ export default function OverviewView({ store, goTo }) {
     const card = customCards.find((c) => c.id === id);
     if (!card) return null;
     return (
-      <OverviewCard key={id} id={id} {...cardProps}>
+      <OverviewCard key={id} id={id} {...cardProps} itemDrop={store.itemDrop(id)} dropClass={store.itemDragClass(id)}>
         <CustomNoteCard
           card={card}
+          store={store}
           onRename={(title) => renameCustomCard(card.id, title)}
           onAddItem={(text) => addCustomCardItem(card.id, text)}
           onEditItem={(itemId, text) => editCustomCardItem(card.id, itemId, text)}

@@ -23,6 +23,7 @@ export default function Dashboard({ onLogout }) {
     <div className="flex min-h-screen font-sans bg-[var(--page-bg)] text-[var(--text)]">
       <Sidebar
         navItems={navItems}
+        itemDrop={store.itemDrop}
         dragKey={dragKey}
         setDragKey={setDragKey}
         reorderNav={reorderNav}

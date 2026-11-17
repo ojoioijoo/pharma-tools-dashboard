@@ -6,6 +6,7 @@ import {
   transactions,
 } from '../data/mockData.js';
 import { useSyncedCollection } from './useSyncedCollection.js';
+import { useTaskTransfer } from './useTaskTransfer.js';
 import { TASK_COLORS } from '../components/TaskColorPicker.jsx';
 
 const TITLES = {
@@ -109,6 +110,8 @@ export function usePharmacyStore() {
   const [overviewOrder, setOverviewOrder, orderStatus] = useSyncedCollection('overviewOrder', ['tasks', 'calendar', 'todos', 'tefteri']);
   const [overviewDragKey, setOverviewDragKey] = useState(null);
   const [customCards, setCustomCards, customCardsStatus, customCardsReady] = useSyncedCollection('cards');
+
+  const taskTransfer = useTaskTransfer({ tasks, setTasks, todos, setTodos, customCards, setCustomCards, selectedDate, today: TODAY });
 
   const statuses = [tasksStatus, todosStatus, tefteriStatus, customersStatus, archiveStatus, customCardsStatus, orderStatus];
   const syncStatus = statuses.includes('error') ? 'error' : statuses.includes('syncing') ? 'syncing' : 'synced';
@@ -284,7 +287,6 @@ export function usePharmacyStore() {
   const reorderTasks = (fromId, toId) => setTasks((prev) => moveById(prev, fromId, toId));
 
   const overdueTodos = todos
-    .filter((t) => t.dateISO < TODAY)
     .map((t) => ({ ...t, date: fmtDate(t.dateISO), done: t.status === 'done' }));
   const todoPreview = todos.map((t) => ({ ...t, date: fmtDate(t.dateISO), done: t.status === 'done' }));
 
@@ -395,6 +397,7 @@ export function usePharmacyStore() {
   }, [customers, crmQuery]);
 
   return {
+    ...taskTransfer,
     view,
     goTo,
     pageTitle: TITLES[view],

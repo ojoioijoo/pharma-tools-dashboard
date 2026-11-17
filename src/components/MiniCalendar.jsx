@@ -1,4 +1,4 @@
-export default function MiniCalendar({ calLabel, dayLabels, calCells, prevMonth, nextMonth, onSelect }) {
+export default function MiniCalendar({ calLabel, dayLabels, calCells, prevMonth, nextMonth, onSelect, itemDrop, itemDragClass }) {
   return (
     <>
       <div className="flex justify-between items-center mb-2.5">
@@ -30,8 +30,9 @@ export default function MiniCalendar({ calLabel, dayLabels, calCells, prevMonth,
           ) : (
             <div
               key={cell.key}
+              {...itemDrop?.('tasks', undefined, cell.iso)}
               onClick={() => onSelect(cell.iso)}
-              className={`aspect-square rounded-[5px] flex flex-col items-center justify-center cursor-pointer text-[9.5px] font-semibold relative ${
+              className={`${itemDragClass?.('tasks', undefined, cell.iso) || ''} aspect-square rounded-[5px] flex flex-col items-center justify-center cursor-pointer text-[9.5px] font-semibold relative ${
                 cell.isSelected
                   ? 'bg-primary text-white'
                   : cell.isToday

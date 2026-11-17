@@ -9,7 +9,7 @@ const fmtEditedAt = (ts) =>
     minute: '2-digit',
   }).format(new Date(ts));
 
-export default function CustomNoteCard({ card, onRename, onAddItem, onEditItem, onRemove }) {
+export default function CustomNoteCard({ card, store, onRename, onAddItem, onEditItem, onRemove }) {
   const [draft, setDraft] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [editDraft, setEditDraft] = useState('');
@@ -46,7 +46,7 @@ export default function CustomNoteCard({ card, onRename, onAddItem, onEditItem, 
       </div>
       <div className="mb-3">
         {card.items.map((it) => (
-          <div key={it.id} className="flex items-start gap-2.5 py-2 border-t border-[var(--line)]">
+          <div key={it.id} {...store.itemDrag(card.id, it.id)} {...store.itemDrop(card.id, it.id)} data-task-color={it.color} className={`flex items-start gap-2.5 py-2 border-t border-[var(--line)] cursor-grab ${store.itemDragClass(card.id, it.id)}`}>
             <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-1.5" />
             <div className="min-w-0 flex-1">
               {editingId === it.id ? (

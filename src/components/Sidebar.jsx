@@ -1,6 +1,6 @@
 import { LogoIcon, SettingsIcon, LogoutIcon, CloseIcon, NAV_ICONS } from './icons.jsx';
 
-export default function Sidebar({ navItems, dragKey, setDragKey, reorderNav, goTo, onLogout, mobileOpen, closeMobile }) {
+export default function Sidebar({ itemDrop, navItems, dragKey, setDragKey, reorderNav, goTo, onLogout, mobileOpen, closeMobile }) {
   return (
     <>
       {mobileOpen && (
@@ -40,8 +40,12 @@ export default function Sidebar({ navItems, dragKey, setDragKey, reorderNav, goT
               key={item.key}
               draggable
               onDragStart={() => setDragKey(item.key)}
-              onDragOver={(e) => e.preventDefault()}
+              onDragOver={(e) => { e.preventDefault(); if (item.key === 'todo' || item.key === 'overview') itemDrop(item.key === 'todo' ? 'todos' : 'tasks').onDragOver(e); }}
               onDrop={(e) => {
+                if (item.key === 'todo' || item.key === 'overview') {
+                  itemDrop(item.key === 'todo' ? 'todos' : 'tasks').onDrop(e);
+                  if (e.isPropagationStopped()) { goTo(item.key); return; }
+                }
                 e.preventDefault();
                 reorderNav(dragKey, item.key);
                 setDragKey(null);

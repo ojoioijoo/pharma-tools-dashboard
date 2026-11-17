@@ -1,19 +1,18 @@
 import { TrashIcon } from '../icons.jsx';
 import TaskColorPicker from '../TaskColorPicker.jsx';
-import { useDragReorder } from '../../hooks/useDragReorder.js';
 
 export default function TodoView({ store }) {
-  const { overdueTodos, toggleTodo, deleteTodo, reorderTodos } = store;
-  const { dragHandlers, rowClass } = useDragReorder(reorderTodos);
+  const { overdueTodos, toggleTodo, deleteTodo } = store;
 
   return (
     <div className="bg-[var(--card-bg)] rounded-[20px] shadow-card overflow-hidden">
       {overdueTodos.map((t) => (
         <div
           key={t.id}
-          {...dragHandlers(t.id)}
+          {...store.itemDrag('todos', t.id)}
+          {...store.itemDrop('todos', t.id)}
           data-task-color={t.color}
-          className={`flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 border-b border-[var(--line)] ${rowClass(t.id)}`}
+          className={`flex items-center gap-3 sm:gap-4 px-4 sm:px-6 py-4 border-b border-[var(--line)] ${store.itemDragClass('todos', t.id)}`}
         >
           <div
             onClick={() => toggleTodo(t.id)}
