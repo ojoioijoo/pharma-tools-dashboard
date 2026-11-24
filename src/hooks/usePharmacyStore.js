@@ -167,6 +167,9 @@ export function usePharmacyStore() {
   const renameCustomCard = (id, title) =>
     setCustomCards((prev) => prev.map((c) => (c.id === id ? { ...c, title } : c)));
 
+  const setCustomCardTitleColor = (id, titleColor) =>
+    setCustomCards((prev) => prev.map((c) => (c.id === id ? { ...c, titleColor } : c)));
+
   const addCustomCardItem = (id, text) =>
     setCustomCards((prev) =>
       prev.map((c) =>
@@ -456,6 +459,7 @@ export function usePharmacyStore() {
     customCards,
     addCustomCard,
     renameCustomCard,
+    setCustomCardTitleColor,
     addCustomCardItem,
     editCustomCardItem,
     setCustomCardItemColor,

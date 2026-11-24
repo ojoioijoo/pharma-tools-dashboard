@@ -2,6 +2,20 @@ import { useState } from 'react';
 import { TrashIcon } from './icons.jsx';
 import TaskColorPicker from './TaskColorPicker.jsx';
 
+const TITLE_COLORS = [
+  { value: '', label: 'Χωρίς χρώμα' },
+  { value: '#fee2e2', label: 'Απαλό κόκκινο' },
+  { value: '#ffedd5', label: 'Απαλό πορτοκαλί' },
+  { value: '#fef3c7', label: 'Απαλό κίτρινο' },
+  { value: '#ecfccb', label: 'Απαλό λαχανί' },
+  { value: '#dcfce7', label: 'Απαλό πράσινο' },
+  { value: '#ccfbf1', label: 'Απαλό τιρκουάζ' },
+  { value: '#dbeafe', label: 'Απαλό μπλε' },
+  { value: '#e0e7ff', label: 'Απαλό ίντιγκο' },
+  { value: '#ede9fe', label: 'Απαλό μωβ' },
+  { value: '#fce7f3', label: 'Απαλό ροζ' },
+];
+
 const fmtEditedAt = (ts) =>
   new Intl.DateTimeFormat('el-GR', {
     day: '2-digit',
@@ -36,12 +50,27 @@ export default function CustomNoteCard({ card, store, onRename, onAddItem, onEdi
 
   return (
     <>
-      <div className="flex items-start justify-between gap-2 mb-3.5">
+      <div
+        className="flex items-center justify-between gap-2 mb-3.5 rounded-lg px-2 py-1.5"
+        style={{ backgroundColor: card.titleColor || 'transparent' }}
+      >
         <input
           value={card.title}
           onChange={(e) => onRename(e.target.value)}
-          className="font-heading font-bold text-sm text-[var(--text)] bg-transparent outline-none min-w-0 flex-1"
+          className="font-heading font-bold text-sm text-[#1d2144] bg-transparent outline-none min-w-0 flex-1"
         />
+        <select
+          aria-label="Χρώμα φόντου τίτλου"
+          title="Χρώμα φόντου τίτλου"
+          value={card.titleColor || ''}
+          onChange={(e) => store.setCustomCardTitleColor(card.id, e.target.value)}
+          onPointerDown={(e) => e.stopPropagation()}
+          className="max-w-[115px] text-[10px] rounded-md border border-black/10 bg-white/80 text-[#1d2144] px-1.5 py-1 outline-none shrink-0"
+        >
+          {TITLE_COLORS.map((color) => (
+            <option key={color.value || 'none'} value={color.value}>{color.label}</option>
+          ))}
+        </select>
         <div onClick={onRemove} className="text-[var(--muted)] hover:text-[var(--text)] cursor-pointer text-xs shrink-0 mt-0.5">
           ✕
         </div>
