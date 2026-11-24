@@ -1,4 +1,6 @@
 import { useState } from 'react';
+import { TrashIcon } from './icons.jsx';
+import TaskColorPicker from './TaskColorPicker.jsx';
 
 const fmtEditedAt = (ts) =>
   new Intl.DateTimeFormat('el-GR', {
@@ -9,7 +11,7 @@ const fmtEditedAt = (ts) =>
     minute: '2-digit',
   }).format(new Date(ts));
 
-export default function CustomNoteCard({ card, store, onRename, onAddItem, onEditItem, onRemove }) {
+export default function CustomNoteCard({ card, store, onRename, onAddItem, onEditItem, onRemove, onRemoveItem }) {
   const [draft, setDraft] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [editDraft, setEditDraft] = useState('');
@@ -83,6 +85,17 @@ export default function CustomNoteCard({ card, store, onRename, onAddItem, onEdi
                 </div>
               )}
             </div>
+            <TaskColorPicker value={it.color} onChange={(color) => store.setCustomCardItemColor(card.id, it.id, color)} />
+            <button
+              type="button"
+              aria-label="Διαγραφή σημείωσης"
+              title="Διαγραφή σημείωσης"
+              onClick={(e) => { e.stopPropagation(); onRemoveItem(it.id); }}
+              onPointerDown={(e) => e.stopPropagation()}
+              className="text-[var(--muted)] hover:text-danger cursor-pointer shrink-0"
+            >
+              <TrashIcon />
+            </button>
           </div>
         ))}
       </div>

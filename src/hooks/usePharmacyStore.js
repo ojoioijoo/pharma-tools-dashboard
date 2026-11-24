@@ -193,6 +193,22 @@ export function usePharmacyStore() {
       ),
     );
 
+  const setCustomCardItemColor = (cardId, itemId, color) => {
+    if (!TASK_COLORS.includes(color)) return;
+    setCustomCards((prev) =>
+      prev.map((c) =>
+        c.id === cardId
+          ? { ...c, items: c.items.map((it) => it.id === itemId ? { ...it, color } : it) }
+          : c,
+      ),
+    );
+  };
+
+  const removeCustomCardItem = (cardId, itemId) =>
+    setCustomCards((prev) =>
+      prev.map((c) => c.id === cardId ? { ...c, items: c.items.filter((it) => it.id !== itemId) } : c),
+    );
+
   const removeCustomCard = (id) => {
     setCustomCards((prev) => prev.filter((c) => c.id !== id));
     setOverviewOrder((prev) => prev.filter((k) => k !== id));
@@ -442,6 +458,8 @@ export function usePharmacyStore() {
     renameCustomCard,
     addCustomCardItem,
     editCustomCardItem,
+    setCustomCardItemColor,
+    removeCustomCardItem,
     removeCustomCard,
 
     crmQuery,

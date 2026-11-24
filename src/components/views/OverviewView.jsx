@@ -444,6 +444,7 @@ export default function OverviewView({ store, goTo }) {
           onRename={(title) => renameCustomCard(card.id, title)}
           onAddItem={(text) => addCustomCardItem(card.id, text)}
           onEditItem={(itemId, text) => editCustomCardItem(card.id, itemId, text)}
+          onRemoveItem={(itemId) => store.removeCustomCardItem(card.id, itemId)}
           onRemove={() => removeCustomCard(card.id)}
         />
       </OverviewCard>
