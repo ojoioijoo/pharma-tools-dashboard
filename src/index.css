@@ -11,6 +11,8 @@
   --muted: #8a8fa3;
   --input-bg: #ffffff;
   --active-nav: #edeffc;
+  --overview-card-bg: #f1f2f4;
+  --overview-item-bg: #ffffff;
 }
 
 .dark {
@@ -22,6 +24,8 @@
   --muted: #9497be;
   --input-bg: #2a2c48;
   --active-nav: rgba(91, 110, 245, 0.25);
+  --overview-card-bg: #242640;
+  --overview-item-bg: #30314a;
 }
 
 body {

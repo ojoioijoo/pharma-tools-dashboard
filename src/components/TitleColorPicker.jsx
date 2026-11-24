@@ -30,7 +30,7 @@ const LEGACY_COLORS = {
 
 export const normalizeTitleColor = (color = '') => LEGACY_COLORS[color.toLowerCase()] || color;
 
-export default function TitleColorPicker({ value = '', onChange }) {
+export default function TitleColorPicker({ value = '', onChange, colors = TITLE_COLORS, ariaLabel = 'Επιλογή χρώματος τίτλου' }) {
   const [open, setOpen] = useState(false);
   const [menuPosition, setMenuPosition] = useState({ top: 0, left: 8 });
   const rootRef = useRef(null);
@@ -68,8 +68,8 @@ export default function TitleColorPicker({ value = '', onChange }) {
       <button
         ref={buttonRef}
         type="button"
-        aria-label="Επιλογή χρώματος τίτλου"
-        title="Επιλογή χρώματος τίτλου"
+        aria-label={ariaLabel}
+        title={ariaLabel}
         aria-expanded={open}
         onPointerDown={(e) => e.stopPropagation()}
         onClick={() => setOpen((shown) => !shown)}
@@ -89,7 +89,7 @@ export default function TitleColorPicker({ value = '', onChange }) {
           style={{ top: menuPosition.top, left: menuPosition.left, visibility: menuPosition.top ? 'visible' : 'hidden' }}
           className="fixed z-[100] flex w-max max-w-[calc(100vw-16px)] flex-nowrap items-center gap-1.5 overflow-x-auto rounded-full border border-[#e5e7eb] bg-white px-2.5 py-2 shadow-xl"
         >
-          {TITLE_COLORS.map((color) => (
+          {colors.map((color) => (
             <button
               key={color.value || 'none'}
               type="button"

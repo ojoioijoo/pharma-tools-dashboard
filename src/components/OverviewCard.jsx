@@ -16,7 +16,7 @@ export default function OverviewCard({ id, dragKey, setDragKey, reorderCards, it
         setDragKey(null);
       }}
       onDragEnd={() => setDragKey(null)}
-      className={`${dropClass} min-w-0 bg-[var(--card-bg)] rounded-[20px] ${padding} shadow-card flex flex-col cursor-grab ${
+      className={`${dropClass} min-w-0 bg-[var(--overview-card-bg)] rounded-[20px] border border-[var(--line)] ${padding} shadow-card flex flex-col cursor-grab ${
         dragging ? 'opacity-40' : 'opacity-100'
       }`}
     >

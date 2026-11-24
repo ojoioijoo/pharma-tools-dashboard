@@ -11,7 +11,7 @@ import { usePharmacyStore } from './hooks/usePharmacyStore.js';
 
 export default function Dashboard({ onLogout }) {
   const store = usePharmacyStore();
-  const { view, goTo, pageTitle, darkMode, toggleDarkMode, navItems, dragKey, setDragKey, reorderNav, syncStatus } =
+  const { view, goTo, pageTitle, darkMode, toggleDarkMode, backgroundColor, setBackgroundColor, navItems, dragKey, setDragKey, reorderNav, syncStatus } =
     store;
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
@@ -20,7 +20,7 @@ export default function Dashboard({ onLogout }) {
   }, [darkMode]);
 
   return (
-    <div className="flex min-h-screen font-sans bg-[var(--page-bg)] text-[var(--text)]">
+    <div className="flex min-h-screen font-sans bg-[var(--page-bg)] text-[var(--text)]" style={{ '--page-bg': backgroundColor }}>
       <Sidebar
         navItems={navItems}
         itemDrop={store.itemDrop}
@@ -38,6 +38,8 @@ export default function Dashboard({ onLogout }) {
           pageTitle={pageTitle}
           darkMode={darkMode}
           toggleDarkMode={toggleDarkMode}
+          backgroundColor={backgroundColor}
+          setBackgroundColor={setBackgroundColor}
           syncStatus={syncStatus}
           onOpenMenu={() => setMobileNavOpen(true)}
         />

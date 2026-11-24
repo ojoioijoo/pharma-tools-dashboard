@@ -47,6 +47,7 @@ function todayISO() {
 
 // Υπολογίζεται στη φόρτωση του module (κάθε reload της σελίδας παίρνει τη σωστή ημέρα).
 const TODAY = todayISO();
+const DEFAULT_BACKGROUND = '#c65391';
 
 function moveItem(order, fromKey, toKey) {
   if (!fromKey || fromKey === toKey) return order;
@@ -109,12 +110,13 @@ export function usePharmacyStore() {
   const [archive, setArchive, archiveStatus] = useSyncedCollection('archive');
   const [overviewOrder, setOverviewOrder, orderStatus] = useSyncedCollection('overviewOrder', ['tasks', 'calendar', 'todos', 'tefteri']);
   const [overviewTitleColors, setOverviewTitleColors, titleColorsStatus] = useSyncedCollection('overviewTitleColors');
+  const [appearance, setAppearance, appearanceStatus] = useSyncedCollection('appearance');
   const [overviewDragKey, setOverviewDragKey] = useState(null);
   const [customCards, setCustomCards, customCardsStatus, customCardsReady] = useSyncedCollection('cards');
 
   const taskTransfer = useTaskTransfer({ tasks, setTasks, todos, setTodos, customCards, setCustomCards, selectedDate, today: TODAY });
 
-  const statuses = [tasksStatus, todosStatus, tefteriStatus, customersStatus, archiveStatus, customCardsStatus, orderStatus, titleColorsStatus];
+  const statuses = [tasksStatus, todosStatus, tefteriStatus, customersStatus, archiveStatus, customCardsStatus, orderStatus, titleColorsStatus, appearanceStatus];
   const syncStatus = statuses.includes('error') ? 'error' : statuses.includes('syncing') ? 'syncing' : 'synced';
   const migrated = useRef(false);
 
@@ -163,6 +165,10 @@ export function usePharmacyStore() {
     setOverviewTitleColors((prev) => color
       ? [...prev.filter((entry) => entry.id !== id), { id, color }]
       : prev.filter((entry) => entry.id !== id));
+
+  const backgroundColor = appearance.find((entry) => entry.id === 'background')?.color || DEFAULT_BACKGROUND;
+  const setBackgroundColor = (color) =>
+    setAppearance((prev) => [...prev.filter((entry) => entry.id !== 'background'), { id: 'background', color }]);
 
   const addCustomCard = () => {
     const id = `custom-${crypto.randomUUID()}`;
@@ -428,6 +434,8 @@ export function usePharmacyStore() {
     pageTitle: TITLES[view],
     darkMode,
     toggleDarkMode,
+    backgroundColor,
+    setBackgroundColor,
     syncStatus,
 
     navItems,

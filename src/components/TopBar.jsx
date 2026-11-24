@@ -1,5 +1,21 @@
 import { useMemo } from 'react';
 import { SunIcon, MoonIcon, SyncIcon, CheckIcon, WarningIcon, MenuIcon } from './icons.jsx';
+import TitleColorPicker from './TitleColorPicker.jsx';
+
+const BACKGROUND_COLORS = [
+  { value: '#ffffff', label: 'Λευκό' },
+  { value: '#c65391', label: 'Ροζ' },
+  { value: '#f2a6a2', label: 'Κοραλλί' },
+  { value: '#ee9c70', label: 'Πορτοκαλί' },
+  { value: '#fff0a8', label: 'Κίτρινο' },
+  { value: '#d9efc5', label: 'Λαχανί' },
+  { value: '#addbd1', label: 'Μέντα' },
+  { value: '#c6dfeb', label: 'Γαλάζιο' },
+  { value: '#b5d4e4', label: 'Μπλε' },
+  { value: '#d7c4df', label: 'Λιλά' },
+  { value: '#e6e2d5', label: 'Μπεζ' },
+  { value: '#eceef0', label: 'Γκρι' },
+];
 
 const SYNC_CONFIG = {
   syncing: { Icon: SyncIcon, label: 'Αποθήκευση...', className: 'animate-spin' },
@@ -19,7 +35,7 @@ function SyncBadge({ status }) {
   );
 }
 
-export default function TopBar({ pageTitle, darkMode, toggleDarkMode, syncStatus, onOpenMenu }) {
+export default function TopBar({ pageTitle, darkMode, toggleDarkMode, backgroundColor, setBackgroundColor, syncStatus, onOpenMenu }) {
   const dateLabel = useMemo(() => {
     const formatted = new Intl.DateTimeFormat('el-GR', {
       weekday: 'long',
@@ -48,6 +64,7 @@ export default function TopBar({ pageTitle, darkMode, toggleDarkMode, syncStatus
       </div>
       <div className="flex items-center gap-2.5 sm:gap-3.5">
         <SyncBadge status={syncStatus} />
+        <TitleColorPicker value={backgroundColor} onChange={setBackgroundColor} colors={BACKGROUND_COLORS} ariaLabel="Χρώμα φόντου" />
         <div className="hidden sm:block bg-[var(--card-bg)] border border-[var(--line)] px-4 py-[9px] rounded-xl text-[13.5px] font-semibold text-[var(--text)]">
           {dateLabel}
         </div>

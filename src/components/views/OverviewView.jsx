@@ -170,7 +170,7 @@ export default function OverviewView({ store, goTo }) {
                 {...store.itemDrag('tasks', tk.id)}
                 {...store.itemDrop('tasks', tk.id)}
                 data-task-color={tk.color}
-                className={`flex items-start gap-2.5 py-2 px-1 border-t border-[var(--line)] ${store.itemDragClass('tasks', tk.id)}`}
+                className={`flex items-start gap-2.5 py-2 px-2 mb-1.5 rounded-lg border border-[var(--line)] bg-[var(--overview-item-bg)] shadow-sm ${store.itemDragClass('tasks', tk.id)}`}
               >
                 <div
                   onClick={() => toggleTask(tk.id)}
@@ -391,7 +391,7 @@ export default function OverviewView({ store, goTo }) {
                 {...store.itemDrag('todos', t.id)}
                 {...store.itemDrop('todos', t.id)}
                 data-task-color={t.color}
-                className={`flex items-center gap-2.5 py-[9px] px-1 border-t border-[var(--line)] ${store.itemDragClass('todos', t.id)}`}
+                className={`flex items-center gap-2.5 py-[9px] px-2 mb-1.5 rounded-lg border border-[var(--line)] bg-[var(--overview-item-bg)] shadow-sm ${store.itemDragClass('todos', t.id)}`}
               >
                 <div
                   onClick={() => store.toggleTodo(t.id)}

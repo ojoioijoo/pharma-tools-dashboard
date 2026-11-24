@@ -54,7 +54,7 @@ export default function CustomNoteCard({ card, store, onRename, onAddItem, onEdi
       </div>
       <div className="mb-3">
         {card.items.map((it) => (
-          <div key={it.id} {...store.itemDrag(card.id, it.id)} {...store.itemDrop(card.id, it.id)} data-task-color={it.color} className={`flex items-start gap-2.5 py-2 border-t border-[var(--line)] cursor-grab ${store.itemDragClass(card.id, it.id)}`}>
+          <div key={it.id} {...store.itemDrag(card.id, it.id)} {...store.itemDrop(card.id, it.id)} data-task-color={it.color} className={`flex items-start gap-2.5 py-2 px-2 mb-1.5 rounded-lg border border-[var(--line)] bg-[var(--overview-item-bg)] shadow-sm cursor-grab ${store.itemDragClass(card.id, it.id)}`}>
             <div className="w-1.5 h-1.5 rounded-full bg-primary shrink-0 mt-1.5" />
             <div className="min-w-0 flex-1">
               {editingId === it.id ? (
