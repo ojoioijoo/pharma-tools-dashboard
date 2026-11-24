@@ -40,12 +40,12 @@ export default function CustomNoteCard({ card, store, onRename, onAddItem, onEdi
     <>
       <div
         className="flex items-center justify-between gap-2 mb-3.5 rounded-lg px-2 py-1.5"
-        style={titleColor ? { backgroundColor: titleColor, color: '#ffffff' } : undefined}
+        style={titleColor ? { backgroundColor: titleColor, color: '#1d2144' } : undefined}
       >
         <input
           value={card.title}
           onChange={(e) => onRename(e.target.value)}
-          className={`font-heading font-bold text-sm ${titleColor ? 'text-white placeholder:text-white/70' : 'text-[var(--text)]'} bg-transparent outline-none min-w-0 flex-1`}
+          className="font-heading font-bold text-sm text-[#1d2144] bg-transparent outline-none min-w-0 flex-1"
         />
         <TitleColorPicker value={normalizeTitleColor(card.titleColor)} onChange={(color) => store.setCustomCardTitleColor(card.id, color)} />
         <div onClick={onRemove} className="text-[var(--muted)] hover:text-[var(--text)] cursor-pointer text-xs shrink-0 mt-0.5">

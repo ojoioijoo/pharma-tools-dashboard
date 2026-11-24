@@ -108,7 +108,7 @@ export default function OverviewView({ store, goTo }) {
   const cardProps = { dragKey: overviewDragKey, setDragKey: setOverviewDragKey, reorderCards: reorderOverview };
   const titleColorFor = (cardId) => normalizeTitleColor(overviewTitleColors.find((entry) => entry.id === cardId)?.color || '');
   const titleStyleFor = (cardId) => titleColorFor(cardId)
-    ? { backgroundColor: titleColorFor(cardId), color: '#ffffff', '--muted': 'rgba(255,255,255,.82)' }
+    ? { backgroundColor: titleColorFor(cardId), color: '#1d2144', '--muted': '#51566b' }
     : undefined;
 
   const gridRef = useRef(null);
