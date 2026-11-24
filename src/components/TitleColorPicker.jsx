@@ -1,37 +1,72 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export const TITLE_COLORS = [
   { value: '', label: 'Χωρίς χρώμα' },
-  { value: '#fee2e2', label: 'Κόκκινο' },
-  { value: '#ffedd5', label: 'Πορτοκαλί' },
-  { value: '#fef3c7', label: 'Κίτρινο' },
-  { value: '#ecfccb', label: 'Λαχανί' },
-  { value: '#dcfce7', label: 'Πράσινο' },
-  { value: '#ccfbf1', label: 'Τιρκουάζ' },
-  { value: '#dbeafe', label: 'Μπλε' },
-  { value: '#e0e7ff', label: 'Ίντιγκο' },
-  { value: '#ede9fe', label: 'Μωβ' },
-  { value: '#fce7f3', label: 'Ροζ' },
+  { value: '#f2a6a2', label: 'Κοραλλί' },
+  { value: '#ee9c70', label: 'Πορτοκαλί' },
+  { value: '#fff0a8', label: 'Κίτρινο' },
+  { value: '#d9efc5', label: 'Λαχανί' },
+  { value: '#addbd1', label: 'Μέντα' },
+  { value: '#c6dfeb', label: 'Γαλάζιο' },
+  { value: '#b5d4e4', label: 'Μπλε' },
+  { value: '#d7c4df', label: 'Λιλά' },
+  { value: '#f4dcd7', label: 'Ροζ' },
+  { value: '#e6e2d5', label: 'Μπεζ' },
+  { value: '#eceef0', label: 'Γκρι' },
 ];
 
 const LEGACY_COLORS = {
-  '#ef4444': '#fee2e2', '#f97316': '#ffedd5', '#eab308': '#fef3c7',
-  '#84cc16': '#ecfccb', '#22c55e': '#dcfce7', '#06b6d4': '#ccfbf1',
-  '#3b82f6': '#dbeafe', '#6366f1': '#e0e7ff', '#a855f7': '#ede9fe',
-  '#ec4899': '#fce7f3', '#c2410c': '#ffedd5', '#a16207': '#fef3c7',
-  '#4d7c0f': '#ecfccb', '#15803d': '#dcfce7', '#0f766e': '#ccfbf1',
-  '#2563eb': '#dbeafe', '#4338ca': '#e0e7ff', '#7e22ce': '#ede9fe',
-  '#be185d': '#fce7f3',
+  '#fee2e2': '#f2a6a2', '#ffedd5': '#ee9c70', '#fef3c7': '#fff0a8',
+  '#ecfccb': '#d9efc5', '#dcfce7': '#addbd1', '#ccfbf1': '#addbd1',
+  '#dbeafe': '#c6dfeb', '#e0e7ff': '#b5d4e4', '#ede9fe': '#d7c4df',
+  '#fce7f3': '#f4dcd7', '#ef4444': '#f2a6a2', '#f97316': '#ee9c70',
+  '#eab308': '#fff0a8', '#84cc16': '#d9efc5', '#22c55e': '#addbd1',
+  '#06b6d4': '#addbd1', '#3b82f6': '#c6dfeb', '#6366f1': '#b5d4e4',
+  '#a855f7': '#d7c4df', '#ec4899': '#f4dcd7', '#c2410c': '#ee9c70',
+  '#a16207': '#fff0a8', '#4d7c0f': '#d9efc5', '#15803d': '#addbd1',
+  '#0f766e': '#addbd1', '#2563eb': '#c6dfeb', '#4338ca': '#b5d4e4',
+  '#7e22ce': '#d7c4df', '#be185d': '#f4dcd7',
 };
 
 export const normalizeTitleColor = (color = '') => LEGACY_COLORS[color.toLowerCase()] || color;
 
 export default function TitleColorPicker({ value = '', onChange }) {
   const [open, setOpen] = useState(false);
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 8 });
+  const rootRef = useRef(null);
+  const buttonRef = useRef(null);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const placeMenu = () => {
+      const button = buttonRef.current?.getBoundingClientRect();
+      const menu = menuRef.current?.getBoundingClientRect();
+      if (!button || !menu) return;
+      const left = Math.max(8, Math.min(button.left, window.innerWidth - menu.width - 8));
+      const top = button.bottom + menu.height + 8 <= window.innerHeight
+        ? button.bottom + 8
+        : Math.max(8, button.top - menu.height - 8);
+      setMenuPosition({ top, left });
+    };
+    const closeOutside = (event) => {
+      if (!rootRef.current?.contains(event.target) && !menuRef.current?.contains(event.target)) setOpen(false);
+    };
+    placeMenu();
+    window.addEventListener('resize', placeMenu);
+    window.addEventListener('scroll', placeMenu, true);
+    document.addEventListener('pointerdown', closeOutside);
+    return () => {
+      window.removeEventListener('resize', placeMenu);
+      window.removeEventListener('scroll', placeMenu, true);
+      document.removeEventListener('pointerdown', closeOutside);
+    };
+  }, [open]);
 
   return (
-    <div className="relative shrink-0" onClick={(e) => e.stopPropagation()}>
+    <div ref={rootRef} className="relative shrink-0" onClick={(e) => e.stopPropagation()}>
       <button
+        ref={buttonRef}
         type="button"
         aria-label="Επιλογή χρώματος τίτλου"
         title="Επιλογή χρώματος τίτλου"
@@ -49,7 +84,11 @@ export default function TitleColorPicker({ value = '', onChange }) {
         </svg>
       </button>
       {open && (
-        <div className="absolute right-0 top-full z-30 mt-1 grid grid-cols-4 gap-2 rounded-xl border border-[var(--line)] bg-[var(--card-bg)] p-3 shadow-xl">
+        <div
+          ref={menuRef}
+          style={{ top: menuPosition.top, left: menuPosition.left, visibility: menuPosition.top ? 'visible' : 'hidden' }}
+          className="fixed z-[100] flex w-max max-w-[calc(100vw-16px)] flex-nowrap items-center gap-1.5 overflow-x-auto rounded-full border border-[#e5e7eb] bg-white px-2.5 py-2 shadow-xl"
+        >
           {TITLE_COLORS.map((color) => (
             <button
               key={color.value || 'none'}
@@ -59,10 +98,15 @@ export default function TitleColorPicker({ value = '', onChange }) {
               aria-pressed={value === color.value}
               onPointerDown={(e) => e.stopPropagation()}
               onClick={() => { onChange(color.value); setOpen(false); }}
-              className={`h-9 w-9 rounded-lg border border-black/20 shadow-sm ${value === color.value ? 'ring-2 ring-primary ring-offset-1' : ''}`}
+              className={`h-8 w-8 shrink-0 rounded-full border border-black/10 shadow-sm ${value === color.value ? 'ring-2 ring-primary ring-offset-1' : ''}`}
               style={{ backgroundColor: color.value || '#ffffff' }}
             >
-              {!color.value && <span className="block h-px w-full rotate-[-45deg] bg-red-500" />}
+              {!color.value && (
+                <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#555" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+                  <path d="M4 4l16 16M10.5 5.5A8 8 0 1 1 5.6 10" />
+                  <path d="M4 9V4h5" />
+                </svg>
+              )}
             </button>
           ))}
         </div>
