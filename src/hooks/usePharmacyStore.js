@@ -108,12 +108,13 @@ export function usePharmacyStore() {
   const [customers, setCustomers, customersStatus] = useSyncedCollection('customers');
   const [archive, setArchive, archiveStatus] = useSyncedCollection('archive');
   const [overviewOrder, setOverviewOrder, orderStatus] = useSyncedCollection('overviewOrder', ['tasks', 'calendar', 'todos', 'tefteri']);
+  const [overviewTitleColors, setOverviewTitleColors, titleColorsStatus] = useSyncedCollection('overviewTitleColors');
   const [overviewDragKey, setOverviewDragKey] = useState(null);
   const [customCards, setCustomCards, customCardsStatus, customCardsReady] = useSyncedCollection('cards');
 
   const taskTransfer = useTaskTransfer({ tasks, setTasks, todos, setTodos, customCards, setCustomCards, selectedDate, today: TODAY });
 
-  const statuses = [tasksStatus, todosStatus, tefteriStatus, customersStatus, archiveStatus, customCardsStatus, orderStatus];
+  const statuses = [tasksStatus, todosStatus, tefteriStatus, customersStatus, archiveStatus, customCardsStatus, orderStatus, titleColorsStatus];
   const syncStatus = statuses.includes('error') ? 'error' : statuses.includes('syncing') ? 'syncing' : 'synced';
   const migrated = useRef(false);
 
@@ -157,6 +158,11 @@ export function usePharmacyStore() {
 
   const reorderOverview = (fromKey, toKey) =>
     setOverviewOrder((order) => moveItem(order, fromKey, toKey));
+
+  const setOverviewTitleColor = (id, color) =>
+    setOverviewTitleColors((prev) => color
+      ? [...prev.filter((entry) => entry.id !== id), { id, color }]
+      : prev.filter((entry) => entry.id !== id));
 
   const addCustomCard = () => {
     const id = `custom-${crypto.randomUUID()}`;
@@ -453,6 +459,8 @@ export function usePharmacyStore() {
     addTodoQuick,
 
     overviewOrder,
+    overviewTitleColors,
+    setOverviewTitleColor,
     overviewDragKey,
     setOverviewDragKey,
     reorderOverview,

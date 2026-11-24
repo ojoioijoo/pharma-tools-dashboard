@@ -3,6 +3,7 @@ import MiniCalendar from '../MiniCalendar.jsx';
 import OverviewCard from '../OverviewCard.jsx';
 import CustomNoteCard from '../CustomNoteCard.jsx';
 import TaskColorPicker from '../TaskColorPicker.jsx';
+import TitleColorPicker, { normalizeTitleColor } from '../TitleColorPicker.jsx';
 import { TrashIcon } from '../icons.jsx';
 import { useDragReorder } from '../../hooks/useDragReorder.js';
 
@@ -89,6 +90,8 @@ export default function OverviewView({ store, goTo }) {
     prevMonth,
     nextMonth,
     overviewOrder,
+    overviewTitleColors,
+    setOverviewTitleColor,
     overviewDragKey,
     setOverviewDragKey,
     reorderOverview,
@@ -103,6 +106,10 @@ export default function OverviewView({ store, goTo }) {
   } = store;
 
   const cardProps = { dragKey: overviewDragKey, setDragKey: setOverviewDragKey, reorderCards: reorderOverview };
+  const titleColorFor = (cardId) => normalizeTitleColor(overviewTitleColors.find((entry) => entry.id === cardId)?.color || '');
+  const titleStyleFor = (cardId) => titleColorFor(cardId)
+    ? { backgroundColor: titleColorFor(cardId), color: '#ffffff', '--muted': 'rgba(255,255,255,.82)' }
+    : undefined;
 
   const gridRef = useRef(null);
   useMasonryGrid(overviewOrder, gridRef);
@@ -146,9 +153,15 @@ export default function OverviewView({ store, goTo }) {
     if (id === 'tasks') {
       return (
         <OverviewCard key={id} id={id} {...cardProps} itemDrop={store.itemDrop(id)} dropClass={store.itemDragClass(id)}>
-          <div className="font-heading font-bold text-[15px] mb-3 text-[var(--text)]">
-            Σήμερα · {selectedLabel}{' '}
-            <span className="font-normal text-[var(--muted)]">({tasksForSelected.length})</span>
+          <div
+            className="flex items-center justify-between gap-2 font-heading font-bold text-[15px] mb-3 text-[var(--text)] rounded-lg px-2 py-1.5"
+            style={titleStyleFor(id)}
+          >
+            <div>
+              Σήμερα · {selectedLabel}{' '}
+              <span className="font-normal text-[var(--muted)]">({tasksForSelected.length})</span>
+            </div>
+            <TitleColorPicker value={titleColorFor(id)} onChange={(color) => setOverviewTitleColor(id, color)} />
           </div>
           <div className={`mb-3 min-h-[40px] ${LIST_SCROLL_CLASS}`}>
             {tasksForSelected.map((tk) => (
@@ -243,8 +256,14 @@ export default function OverviewView({ store, goTo }) {
         <OverviewCard key={id} id={id} {...cardProps} itemDrop={store.itemDrop(id)} dropClass={store.itemDragClass(id)}>
           <div className="flex items-start justify-between mb-3.5">
             <div>
-              <div className="font-heading font-bold text-sm mb-1 text-[var(--text)]">
-                Τεφτέρι <span className="font-normal text-[var(--muted)]">({store.tefteriEntries.length})</span>
+              <div
+                className="flex items-center gap-2 font-heading font-bold text-sm mb-1 text-[var(--text)] rounded-lg px-2 py-1.5"
+                style={titleStyleFor(id)}
+              >
+                <div className="min-w-0 flex-1">
+                  Τεφτέρι <span className="font-normal text-[var(--muted)]">({store.tefteriEntries.length})</span>
+                </div>
+                <TitleColorPicker value={titleColorFor(id)} onChange={(color) => setOverviewTitleColor(id, color)} />
               </div>
               <a href="#" onClick={(e) => { e.preventDefault(); goTo('tefteri'); }} className="text-[11.5px] font-semibold">
                 Όλες →
@@ -352,8 +371,14 @@ export default function OverviewView({ store, goTo }) {
       return (
         <OverviewCard key={id} id={id} {...cardProps} itemDrop={store.itemDrop(id)} dropClass={store.itemDragClass(id)}>
           <div className="mb-3.5">
-            <div className="font-heading font-bold text-sm mb-1 text-[var(--text)]">
-              Εκκρεμότητες <span className="font-normal text-[var(--muted)]">({store.todoPreview.length})</span>
+            <div
+              className="flex items-center gap-2 font-heading font-bold text-sm mb-1 text-[var(--text)] rounded-lg px-2 py-1.5"
+              style={titleStyleFor(id)}
+            >
+              <div className="min-w-0 flex-1">
+                Εκκρεμότητες <span className="font-normal text-[var(--muted)]">({store.todoPreview.length})</span>
+              </div>
+              <TitleColorPicker value={titleColorFor(id)} onChange={(color) => setOverviewTitleColor(id, color)} />
             </div>
             <a href="#" onClick={(e) => { e.preventDefault(); goTo('todo'); }} className="text-[11.5px] font-semibold">
               Όλες →

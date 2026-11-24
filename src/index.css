@@ -28,11 +28,11 @@ body {
   margin: 0;
 }
 
-[data-task-color="red"] { --task-bg: #fee2e2; }
+[data-task-color="red"] { --task-bg: #ef4444; }
 [data-task-color="yellow"] { --task-bg: #fef3c7; }
 [data-task-color="green"] { --task-bg: #dcfce7; }
 [data-task-color="blue"] { --task-bg: #dbeafe; }
-.dark [data-task-color="red"] { --task-bg: #592d3b; }
+.dark [data-task-color="red"] { --task-bg: #991b1b; }
 .dark [data-task-color="yellow"] { --task-bg: #514528; }
 .dark [data-task-color="green"] { --task-bg: #254b3e; }
 .dark [data-task-color="blue"] { --task-bg: #283e64; }
