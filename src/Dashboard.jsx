@@ -20,7 +20,13 @@ export default function Dashboard({ onLogout }) {
   }, [darkMode]);
 
   return (
-    <div className="flex min-h-screen font-sans bg-[var(--page-bg)] text-[var(--text)]" style={{ '--page-bg': backgroundColor }}>
+    <div
+      className="flex min-h-screen font-sans bg-[var(--page-bg)] text-[var(--text)]"
+      style={{
+        '--page-bg': backgroundColor,
+        '--sidebar-bg': `color-mix(in srgb, ${backgroundColor} 72%, #000)`,
+      }}
+    >
       <Sidebar
         navItems={navItems}
         itemDrop={store.itemDrop}
