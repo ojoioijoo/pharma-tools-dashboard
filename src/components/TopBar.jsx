@@ -28,7 +28,7 @@ function SyncBadge({ status }) {
   if (!config) return null;
   const { Icon, label, className } = config;
   return (
-    <div className="flex items-center gap-1.5 text-[12px] font-semibold text-[var(--muted)]" title={label}>
+    <div className="flex items-center gap-1.5 text-[12px] font-semibold text-[#1d2144] bg-white border border-[#1d2144]/10 rounded-xl px-3 py-2" title={label}>
       <Icon className={className} />
       <span className="hidden lg:inline">{label}</span>
     </div>
@@ -56,8 +56,8 @@ export default function TopBar({ pageTitle, darkMode, toggleDarkMode, background
           <MenuIcon />
         </div>
         <div className="min-w-0">
-          <div className="text-[13.5px] text-[var(--muted)] mb-1">Καλημέρα Στέφανε!</div>
-          <div className="font-heading font-bold text-[22px] sm:text-[27px] text-[var(--text)] truncate">
+          <div className="inline-flex text-[13.5px] font-semibold text-[#1d2144] bg-white rounded-lg px-2.5 py-1 mb-1">Καλημέρα Στέφανε!</div>
+          <div className="w-fit max-w-full font-heading font-bold text-[22px] sm:text-[27px] text-[#1d2144] bg-white border border-[#1d2144]/10 rounded-xl px-3 py-1.5 truncate">
             {pageTitle}
           </div>
         </div>

@@ -20,7 +20,7 @@ export default function Sidebar({ itemDrop, navItems, dragKey, setDragKey, reord
           <div className="w-[38px] h-[38px] rounded-xl bg-primary flex items-center justify-center shrink-0">
             <LogoIcon stroke="#FFFFFF" />
           </div>
-          <div className="font-heading font-bold text-[16.5px] leading-tight text-[var(--text)] flex-1">
+          <div className="font-heading font-bold text-[16.5px] leading-tight text-[#1d2144] bg-white rounded-xl px-2.5 py-2 flex-1">
             Φαρμακείο
             <br />
             Μελενικίτσι
