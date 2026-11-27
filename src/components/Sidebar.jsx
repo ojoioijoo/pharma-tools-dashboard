@@ -55,12 +55,12 @@ export default function Sidebar({ itemDrop, navItems, dragKey, setDragKey, reord
                 goTo(item.key);
                 closeMobile();
               }}
-              className={`flex items-center gap-3 px-3.5 py-[11px] rounded-2xl cursor-pointer text-[14.5px] font-semibold ${
+              className={`flex items-center gap-3 px-3.5 py-[11px] rounded-xl cursor-pointer text-[14.5px] font-semibold bg-white text-[#1d2144] ${
                 item.dragging ? 'opacity-40' : 'opacity-100'
               } ${
                 item.active
-                  ? 'bg-[var(--active-nav)] text-[var(--text)]'
-                  : 'text-[var(--muted)]'
+                  ? 'border border-[#1d2144]/15 shadow-sm'
+                  : 'border border-transparent'
               }`}
             >
               <Icon className="shrink-0" />
@@ -71,13 +71,13 @@ export default function Sidebar({ itemDrop, navItems, dragKey, setDragKey, reord
 
         <div className="flex-1" />
 
-        <div className="flex items-center gap-3 px-3.5 py-[11px] rounded-2xl text-[14.5px] font-semibold text-[var(--muted)] cursor-pointer">
+        <div className="flex items-center gap-3 px-3.5 py-[11px] rounded-xl bg-white text-[14.5px] font-semibold text-[#1d2144] cursor-pointer">
           <SettingsIcon />
           Ρυθμίσεις
         </div>
         <div
           onClick={onLogout}
-          className="flex items-center gap-3 px-3.5 pt-[11px] pb-1 text-[14.5px] font-semibold text-[var(--muted)] cursor-pointer"
+          className="flex items-center gap-3 px-3.5 py-[11px] rounded-xl bg-white text-[14.5px] font-semibold text-[#1d2144] cursor-pointer"
         >
           <LogoutIcon />
           Αποσύνδεση
